@@ -107,3 +107,57 @@ Content-Type: application/json
 ### 9. Eliminar producto (Éxito - 200)
 DELETE http://localhost:8080/api/productos/19
 
+
+
+
+## COLECCION: SistemaGestionBocadillos
+@baseUrl = http://localhost:8080/api
+
+### 1. CP01 - Consultar catálogo (Éxito - 200 OK)
+GET http://localhost:8080/api/productos
+
+
+### 2. CP02 - Crear producto (Éxito - 201 Created)
+POST http://localhost:8080/api/productos
+Content-Type: application/json
+
+{
+    "nombre": "Bocadillo Veleño Lonja 500g",
+    "precio": 8500.0,
+    "cantidad": 150
+}
+
+
+### 3. CP03 - Consultar por ID (Éxito - 200 OK)
+GET http://localhost:8080/api/productos/23
+
+
+### 4. CP04 - Actualizar producto (Éxito - 200 OK)
+PUT http://localhost:8080/api/productos/23
+Content-Type: application/json
+
+{
+    "nombre": "Bocadillo Veleño Lonja 500g Modificado",
+    "precio": 9000.0,
+    "cantidad": 180
+}
+
+
+### 5. CP05 - Eliminar producto (Éxito - 200 OK)
+DELETE http://localhost:8080/api/productos/23
+
+### 6. CP06 - Consultar ID inexistente (Error - 404 Not Found)
+GET http://localhost:8080/api/productos/99999
+
+### 7. CP07 - Actualizar ID inexistente (Error - 404 Not Found)
+PUT http://localhost:8080/api/productos/99999
+Content-Type: application/json
+
+{
+    "nombre": "Producto Inexistente",
+    "precio": 5000.0,
+    "cantidad": 10
+}
+
+### 8. CP08 - Eliminar ID inexistente (Error - 404 Not Found)
+DELETE http://localhost:8080/api/productos/99999
