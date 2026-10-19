@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Reportes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand-logo">
+                <img src="https://via.placeholder.com/150x80" alt="Logo Bocadillos Factory" class="logo-img">
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="inventario.html" class="menu-item"><span class="material-symbols-outlined">inventory_2</span> Inventario</a>
+                <a href="produccion.html" class="menu-item"><span class="material-symbols-outlined">precision_manufacturing</span> Producción</a>
+                <a href="pedidos.html" class="menu-item"><span class="material-symbols-outlined">orders</span> Pedidos</a>
+                <a href="proveedores.html" class="menu-item"><span class="material-symbols-outlined">local_shipping</span> Proveedores</a>
+                <a href="reportes.html" class="menu-item"><span class="material-symbols-outlined">bar_chart</span> Reportes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="cerrarsesion.html" class="menu-item logout"><span class="material-symbols-outlined">logout</span> Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="material-symbols-outlined menu-toggle">menu</span>
+                    <h1>SISTEMA DE GESTIÓN INTEGRAL</h1>
+                </div>
+                <div class="header-right">
+                    <span class="date"><span class="material-symbols-outlined">calendar_month</span> 02 de junio 2026</span>
+                    <span class="user-role"><span class="material-symbols-outlined">account_circle</span> Administrador</span>
+                </div>
+            </header>
+
+            <section class="content-body reportes-layout">
+                
+                <div class="page-title-zone">
+                    <div class="title-icon">
+                        <span class="material-symbols-outlined size-xl">bar_chart</span>
+                    </div>
+                    <div>
+                        <h2>Reportes</h2>
+                        <p class="subtitle">Genera y consulta reportes de la información de la fábrica</p>
+                    </div>
+                </div>
+
+                <div class="reports-grid">
+                    
+                    <div class="report-card">
+                        <div class="card-icon-circle circle-green">
+                            <span class="material-symbols-outlined">inventory_2</span>
+                        </div>
+                        <h3>Reporte de inventario</h3>
+                        <p>Consulta de reporte de productos y existencias actuales en inventario</p>
+                        <button class="btn-generate">Generar Reporte</button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="card-icon-circle circle-blue">
+                            <span class="material-symbols-outlined">precision_manufacturing</span>
+                        </div>
+                        <h3>Reporte de Producción</h3>
+                        <p>Consulta el reporte de lotes de producción realizados</p>
+                        <button class="btn-generate">Generar Reporte</button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="card-icon-circle circle-yellow">
+                            <span class="material-symbols-outlined">orders</span>
+                        </div>
+                        <h3>Reporte de Pedidos</h3>
+                        <p>Consulta el reporte de pedidos realizados por los clientes</p>
+                        <button class="btn-generate">Generar Reporte</button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="card-icon-circle circle-purple">
+                            <span class="material-symbols-outlined">local_shipping</span>
+                        </div>
+                        <h3>Reporte de Proveedores</h3>
+                        <p>Consulta el reporte de proveedores registrados en el sistema</p>
+                        <button class="btn-generate">Generar Reporte</button>
+                    </div>
+
+                </div>
+
+                <div class="info-export-bar">
+                    <div class="info-side">
+                        <span class="material-symbols-outlined info-icon">info</span>
+                        <div>
+                            <h4>Información</h4>
+                            <p>Selecciona un tipo de reporte para generar y visualizar la información correspondiente. Los reportes se pueden descargar en PDF o Excel</p>
+                        </div>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn-export btn-pdf">
+                            <span class="material-symbols-outlined">picture_as_pdf</span> Exportar PDF
+                        </button>
+                        <button class="btn-export btn-excel">
+                            <span class="material-symbols-outlined">description</span> Exportar Excel
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

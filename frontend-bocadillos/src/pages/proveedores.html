@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Proveedores</title>
+    <!-- Importamos los mismos iconos de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- MENÚ LATERAL (Clase active en Proveedores) -->
+        <aside class="sidebar">
+            <div class="brand-logo">
+                <img src="https://via.placeholder.com/150x80" alt="Logo Bocadillos Factory" class="logo-img">
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="inventario.html" class="menu-item"><span class="material-symbols-outlined">inventory_2</span> Inventario</a>
+                <a href="produccion.html" class="menu-item"><span class="material-symbols-outlined">precision_manufacturing</span> Producción</a>
+                <a href="pedidos.html" class="menu-item"><span class="material-symbols-outlined">orders</span> Pedidos</a>
+                <a href="proveedores.html" class="menu-item"><span class="material-symbols-outlined">local_shipping</span> Proveedores</a>
+                <a href="reportes.html" class="menu-item"><span class="material-symbols-outlined">bar_chart</span> Reportes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="cerrarsesion.html" class="menu-item logout"><span class="material-symbols-outlined">logout</span> Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- ENCABEZADO SUPERIOR -->
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="material-symbols-outlined menu-toggle">menu</span>
+                    <h1>SISTEMA DE GESTIÓN INTEGRAL</h1>
+                </div>
+                <div class="header-right">
+                    <span class="date"><span class="material-symbols-outlined">calendar_month</span> 02 de junio 2026</span>
+                    <span class="user-role"><span class="material-symbols-outlined">account_circle</span> Administrador</span>
+                </div>
+            </header>
+
+            <!-- SECCIÓN VARIABLE: GESTIÓN DE PROVEEDORES -->
+            <section class="content-body">
+                
+                <div class="page-title-zone">
+                    <div class="title-icon">
+                        <span class="material-symbols-outlined size-xl">local_shipping</span>
+                    </div>
+                    <div>
+                        <h2>Gestión de Proveedores</h2>
+                        <p class="subtitle">Administra la información de los proveedores de la fábrica</p>
+                    </div>
+                </div>
+
+                <!-- BARRA DE ACCIONES Y BÚSQUEDA -->
+                <div class="action-bar">
+                    <div class="crud-buttons">
+                        <button class="btn btn-success"><span class="material-symbols-outlined">add</span> Nuevo Proveedor</button>
+                        <button class="btn btn-info"><span class="material-symbols-outlined">edit</span> Editar</button>
+                        <button class="btn btn-danger"><span class="material-symbols-outlined">delete</span> Eliminar</button>
+                    </div>
+                    <div class="search-box">
+                        <span class="material-symbols-outlined search-icon">search</span>
+                        <input type="text" placeholder="Buscar Proveedor">
+                    </div>
+                </div>
+
+                <!-- TABLA DE DATOS -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Proveedor</th>
+                                <th>Telefono</th>
+                                <th>Correo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Lacteos el valle</td>
+                                <td>3171234567</td>
+                                <td>Contacto@lacteoselvalle.com</td>
+                                <td><span class="badge status-active">Activo</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Empaques del norte</td>
+                                <td>3182345678</td>
+                                <td>Ventas@empaquesnorte.com</td>
+                                <td><span class="badge status-active">Activo</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Azucares colombianos</td>
+                                <td>3154566789</td>
+                                <td>Info@azucarescol.com</td>
+                                <td><span class="badge status-active">Activo</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Suministros veleños</td>
+                                <td>3204567890</td>
+                                <td>Suministros@veleño.com</td>
+                                <td><span class="badge status-inactive">Inactivo</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Transporte S.A.S</td>
+                                <td>3165678901</td>
+                                <td>Servicios@transporte.com</td>
+                                <td><span class="badge status-active">Activo</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINADO -->
+                <footer class="table-footer">
+                    <span>Mostrando 5 de 5 Proveedores</span>
+                    <div class="pagination">
+                        <button class="page-nav">&lt;</button>
+                        <button class="page-num active">1</button>
+                        <button class="page-nav">&gt;</button>
+                    </div>
+                </footer>
+
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

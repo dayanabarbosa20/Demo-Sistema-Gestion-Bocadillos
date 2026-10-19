@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Cerrar Sesión</title>
+    <!-- Importamos los mismos iconos de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- MENÚ LATERAL (Clase active en la sección inferior de Cerrar Sesion) -->
+        <aside class="sidebar">
+            <div class="brand-logo">
+                <img src="https://via.placeholder.com/150x80" alt="Logo Bocadillos Factory" class="logo-img">
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="inventario.html" class="menu-item"><span class="material-symbols-outlined">inventory_2</span> Inventario</a>
+                <a href="produccion.html" class="menu-item"><span class="material-symbols-outlined">precision_manufacturing</span> Producción</a>
+                <a href="pedidos.html" class="menu-item"><span class="material-symbols-outlined">orders</span> Pedidos</a>
+                <a href="proveedores.html" class="menu-item"><span class="material-symbols-outlined">local_shipping</span> Proveedores</a>
+                <a href="reportes.html" class="menu-item"><span class="material-symbols-outlined">bar_chart</span> Reportes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="cerrarsesion.html" class="menu-item logout"><span class="material-symbols-outlined">logout</span> Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- ENCABEZADO SUPERIOR -->
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="material-symbols-outlined menu-toggle">menu</span>
+                    <h1>SISTEMA DE GESTIÓN INTEGRAL</h1>
+                </div>
+                <div class="header-right">
+                    <span class="date"><span class="material-symbols-outlined">calendar_month</span> 02 de junio 2026</span>
+                    <span class="user-role"><span class="material-symbols-outlined">account_circle</span> Administrador</span>
+                </div>
+            </header>
+
+            <!-- SECCIÓN VARIABLE: CONFIRMACIÓN DE SALIDA -->
+            <section class="content-body logout-layout">
+                
+                <div class="page-title-zone">
+                    <div class="title-icon">
+                        <span class="material-symbols-outlined size-xl">logout</span>
+                    </div>
+                    <div>
+                        <h2>Cerrar Sesión</h2>
+                        <p class="subtitle">Confirma si deseas salir del sistema</p>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE LA VENTANA DE ALERTA -->
+                <div class="logout-card-container">
+                    <div class="logout-card">
+                        
+                        <span class="material-symbols-outlined logout-big-icon">logout</span>
+                        
+                        <h3>¿Esta seguro que desea cerrar sesión?</h3>
+                        
+                        <p>Se cerrara su sesión actual y deberas iniciar sesión nuevamente para acceder al sistema</p>
+                        
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="logout-actions">
+                            <button class="btn-logout-cancel" onclick="window.history.back();">
+                                <span class="material-symbols-outlined">close</span> Cancelar
+                            </button>
+                            <button class="btn-logout-confirm" onclick="window.location.href='login.html';">
+                                <span class="material-symbols-outlined">logout</span> Cerrar sesión
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

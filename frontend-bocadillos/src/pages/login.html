@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Login</title>
+    <!-- Importamos los mismos iconos de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="/frontend-bocadillos/public/css/style.css">
+</head>
+<body class="login-page-body">
+
+    <!-- CONTENEDOR CENTRAL DE LOGIN -->
+    <div class="login-container">
+        
+        <!-- Icono de Usuario Grande -->
+        <div class="login-avatar-zone">
+            <span class="material-symbols-outlined login-avatar-icon">account_circle</span>
+        </div>
+
+        <!-- Títulos -->
+        <div class="login-header">
+            <h2>Sistema de Gestión integral</h2>
+            <p>Fabrica de Bocadillos Mundo Raro</p>
+        </div>
+
+        
+        <!-- Cambiar para que apunte a dashboard.html -->
+<form class="login-form" action="dashboard.html" method="POST" onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+            
+            <!-- Campo Usuario -->
+            <div class="form-group">
+                <label for="username">
+                    <span class="material-symbols-outlined label-icon">person</span> Usuario
+                </label>
+                <div class="input-wrapper">
+                    <input type="email" id="username" placeholder="username@example.com" required>
+                </div>
+            </div>
+
+            <!-- Campo Contraseña -->
+            <div class="form-group">
+                <label for="password">
+                    <span class="material-symbols-outlined label-icon">lock</span> Contraseña
+                </label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" value="************" required>
+                    <span class="material-symbols-outlined visibility-icon">visibility</span>
+                </div>
+            </div>
+
+            <!-- Botón Ingresar -->
+            <button type="submit" class="btn-login-submit">
+                <span class="material-symbols-outlined">arrow_forward</span> INGRESAR
+            </button>
+            
+            <!-- Enlace Recuperación -->
+            <div class="login-forgot-zone">
+                <a href="#" class="forgot-link">¿Olvido su Contraseña?</a>
+            </div>
+
+        </form>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

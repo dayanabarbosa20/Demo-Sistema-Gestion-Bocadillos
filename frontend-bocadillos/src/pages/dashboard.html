@@ -1,0 +1,108 @@
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Inicio</title>
+    <!-- Importamos los mismos iconos de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="/frontend-bocadillos/public/css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- MENÚ LATERAL (Clase active en Inicio) -->
+        <aside class="sidebar">
+            <div class="brand-logo">
+                <img src="https://via.placeholder.com/150x80" alt="Logo Bocadillos Factory" class="logo-img">
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="inventario.html" class="menu-item"><span class="material-symbols-outlined">inventory_2</span> Inventario</a>
+                <a href="produccion.html" class="menu-item"><span class="material-symbols-outlined">precision_manufacturing</span> Producción</a>
+                <a href="pedidos.html" class="menu-item"><span class="material-symbols-outlined">orders</span> Pedidos</a>
+                <a href="proveedores.html" class="menu-item"><span class="material-symbols-outlined">local_shipping</span> Proveedores</a>
+                <a href="reportes.html" class="menu-item"><span class="material-symbols-outlined">bar_chart</span> Reportes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="cerrarsesion.html" class="menu-item logout"><span class="material-symbols-outlined">logout</span> Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- ENCABEZADO SUPERIOR -->
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="material-symbols-outlined menu-toggle">menu</span>
+                    <h1>SISTEMA DE GESTIÓN INTEGRAL</h1>
+                </div>
+                <div class="header-right">
+                    <span class="user-role"><span class="material-symbols-outlined">account_circle</span> Administrador</span>
+                </div>
+            </header>
+
+            <!-- SECCIÓN VARIABLE: DASHBOARD INICIO -->
+            <section class="content-body">
+                
+                <!-- BARRA DE BIENVENIDA Y FECHA -->
+                <div class="dashboard-welcome-bar">
+                    <h2 class="welcome-text">Bienvenido Administrador</h2>
+                    <span class="dashboard-date">
+                        <span class="material-symbols-outlined">calendar_month</span> 02 de junio 2026
+                    </span>
+                </div>
+
+                <!-- REJILLA DE TARJETAS DE INDICADORES (2x2) -->
+                <div class="dashboard-grid">
+                    
+                    <!-- Tarjeta Inventario -->
+                    <div class="dash-card">
+                        <span class="material-symbols-outlined card-icon text-green">inventory_2</span>
+                        <div class="card-info">
+                            <span class="card-title text-green">INVENTARIO</span>
+                            <span class="card-value">150</span>
+                            <span class="card-label">Productos</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Pedidos -->
+                    <div class="dash-card">
+                        <span class="material-symbols-outlined card-icon text-red">orders</span>
+                        <div class="card-info">
+                            <span class="card-title text-red">PEDIDOS</span>
+                            <span class="card-value">25</span>
+                            <span class="card-label">Pendientes</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Producción -->
+                    <div class="dash-card">
+                        <span class="material-symbols-outlined card-icon text-purple">settings</span>
+                        <div class="card-info">
+                            <span class="card-title text-purple">PRODUCCIÓN</span>
+                            <span class="card-value">50</span>
+                            <span class="card-label">Lotes activos</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Proveedores -->
+                    <div class="dash-card">
+                        <span class="material-symbols-outlined card-icon text-blue">local_shipping</span>
+                        <div class="card-info">
+                            <span class="card-title text-blue">PROVEEDORES</span>
+                            <span class="card-value">10</span>
+                            <span class="card-label">Registrados</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

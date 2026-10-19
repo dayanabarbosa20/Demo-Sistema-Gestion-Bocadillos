@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Integral - Producción</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand-logo">
+                <img src="img/produccion.html.png" alt="Logo Bocadillos Factory" class="logo-img">
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="inventario.html" class="menu-item"><span class="material-symbols-outlined">inventory_2</span> Inventario</a>
+                <a href="produccion.html" class="menu-item"><span class="material-symbols-outlined">precision_manufacturing</span> Producción</a>
+                <a href="pedidos.html" class="menu-item"><span class="material-symbols-outlined">orders</span> Pedidos</a>
+                <a href="proveedores.html" class="menu-item"><span class="material-symbols-outlined">local_shipping</span> Proveedores</a>
+                <a href="reportes.html" class="menu-item"><span class="material-symbols-outlined">bar_chart</span> Reportes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="cerrarsesion.html" class="menu-item logout"><span class="material-symbols-outlined">logout</span> Cerrar sesión</a>
+            </div> 
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="material-symbols-outlined menu-toggle">menu</span>
+                    <h1>SISTEMA DE GESTIÓN INTEGRAL</h1>
+                </div>
+                <div class="header-right">
+                    <span class="date"><span class="material-symbols-outlined">calendar_month</span> 02 de junio 2026</span>
+                    <span class="user-role"><span class="material-symbols-outlined">account_circle</span> Administrador</span>
+                </div>
+            </header>
+
+            <section class="content-body">
+                
+                <div class="page-title-zone">
+                    <div class="title-icon">
+                        <span class="material-symbols-outlined size-xl">deployed_code</span>
+                    </div>
+                    <div>
+                        <h2>Gestión de Producción</h2>
+                        <p class="subtitle">Administra los lotes de producción de la fábrica</p>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="crud-buttons">
+                        <button class="btn btn-success"><span class="material-symbols-outlined">add</span> Nuevo Lote</button>
+                        <button class="btn btn-info"><span class="material-symbols-outlined">edit</span> Editar</button>
+                        <button class="btn btn-danger"><span class="material-symbols-outlined">delete</span> Eliminar</button>
+                    </div>
+                    <div class="search-box">
+                        <span class="material-symbols-outlined search-icon">search</span>
+                        <input type="text" placeholder="Buscar lote">
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>L001</td>
+                                <td>Bocadillo Veleño</td>
+                                <td>100</td>
+                                <td><span class="badge status-in-progress">En proceso</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>L002</td>
+                                <td>Guayaba</td>
+                                <td>50</td>
+                                <td><span class="badge status-finished">Finalizado</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>L003</td>
+                                <td>Azúcar</td>
+                                <td>75</td>
+                                <td><span class="badge status-pending">Pendiente</span></td>
+                                <td>
+                                    <button class="action-btn edit-inline"><span class="material-symbols-outlined">edit</span></button>
+                                    <button class="action-btn delete-inline"><span class="material-symbols-outlined">delete</span></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <footer class="table-footer">
+                    <span>Mostrando 3 de 3 lotes</span>
+                    <div class="pagination">
+                        <button class="page-nav">&lt;</button>
+                        <button class="page-num active">1</button>
+                        <button class="page-nav">&gt;</button>
+                    </div>
+                </footer>
+
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

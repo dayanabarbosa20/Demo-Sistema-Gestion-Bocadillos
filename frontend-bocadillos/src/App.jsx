@@ -1,35 +1,29 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Reportes from './pages/Reportes';
+import Inventario from './pages/Inventario';
 import Productos from './pages/Productos';
-
-function Home() {
-  return (
-    <div style={{ padding: '20px' }}>
-      <h2>Bienvenido al Sistema de Gestión de Bocadillos</h2>
-      <p>Selecciona una opción del menú para comenzar.</p>
-    </div>
-  );
-}
+import Produccion from './pages/Produccion';
+import Pedidos from './pages/Pedidos';
+import Proveedores from './pages/Proveedores';
+import CerrarSesion from './pages/CerrarSesion';
 
 function App() {
   return (
-    <Router>
-      <div style={{ fontFamily: 'Arial, sans-serif' }}>
-        <nav style={{ background: '#2c3e50', padding: '15px' }}>
-          <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none', fontWeight: 'bold' }}>
-            Inicio
-          </Link>
-          <Link to="/productos" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>
-            Gestión de Productos
-          </Link>
-        </nav>
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/productos" element={<Productos />} />
-        </Routes>
-      </div>
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/inventario" element={<Inventario />} />
+        <Route path="/productos" element={<Productos />} />
+        <Route path="/produccion" element={<Produccion />} />
+        <Route path="/pedidos" element={<Pedidos />} />
+        <Route path="/proveedores" element={<Proveedores />} />
+        <Route path="/reportes" element={<Reportes />} />
+        <Route path="/cerrar-sesion" element={<CerrarSesion />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
