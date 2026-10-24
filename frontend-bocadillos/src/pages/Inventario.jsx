@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import AppShell from '../components/AppShell';
 
+const INVENTORY_STORAGE_KEY = 'bocadillos-inventory';
+
 // Datos iniciales
 const datosIniciales = [
   { codigo: '001', producto: 'Bocadillo Veleño', cantidad: 100, estado: 'Disponible', estadoClass: 'status-available' },
@@ -10,7 +12,14 @@ const datosIniciales = [
 
 export default function Inventario() {
   // Estados para manejar los datos y la UI
-  const [listaProductos, setListaProductos] = useState(datosIniciales);
+  const [listaProductos, setListaProductos] = useState(() => {
+    try {
+      const savedInventory = localStorage.getItem(INVENTORY_STORAGE_KEY);
+      return savedInventory ? JSON.parse(savedInventory) : datosIniciales;
+    } catch {
+      return datosIniciales;
+    }
+  });
   const [busqueda, setBusqueda] = useState('');
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   
@@ -23,6 +32,14 @@ export default function Inventario() {
     cantidad: '',
     estado: 'Disponible'
   });
+
+  const actualizarInventario = (actualizador) => {
+    setListaProductos((anterior) => {
+      const siguiente = actualizador(anterior);
+      localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(siguiente));
+      return siguiente;
+    });
+  };
 
   // --- BUSCADOR EN TIEMPO REAL ---
   const productosFiltrados = listaProductos.filter((item) =>
@@ -65,7 +82,7 @@ export default function Inventario() {
     }
 
     if (window.confirm(`¿Estás seguro de que deseas eliminar el producto ${codigoEliminar}?`)) {
-      setListaProductos(prev => prev.filter(p => p.codigo !== codigoEliminar));
+      actualizarInventario(prev => prev.filter(p => p.codigo !== codigoEliminar));
       if (productoSeleccionado?.codigo === codigoEliminar) {
         setProductoSeleccionado(null);
       }
@@ -85,7 +102,7 @@ export default function Inventario() {
 
     if (modoEdicion) {
       // Actualizar producto existente
-      setListaProductos(prev =>
+      actualizarInventario(prev =>
         prev.map(p => p.codigo === formDatos.codigo ? {
           ...formDatos,
           cantidad: Number(formDatos.cantidad),
@@ -106,7 +123,7 @@ export default function Inventario() {
         estado: estadoTexto,
         estadoClass
       };
-      setListaProductos(prev => [...prev, nuevo]);
+      actualizarInventario(prev => [...prev, nuevo]);
     }
 
     setMostrarModal(false);

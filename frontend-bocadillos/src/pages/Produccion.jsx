@@ -152,34 +152,29 @@ export default function Produccion() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Cantidad</th>
                 <th>Código de lote</th>
-                <th>Estado</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
                 <th>Fecha</th>
-                <th>ID producción</th>
-                <th>ID producto</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {cargando ? (
-                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>Cargando producción...</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Cargando producción...</td></tr>
               ) : error ? (
-                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>{error}</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>{error}</td></tr>
               ) : lotesFiltrados.length > 0 ? (
                 lotesFiltrados.map((item) => {
                   return (
                     <tr key={item.idProduccion}>
-                      <td>{item.cantidad}</td>
                       <td>{item.codigoLote}</td>
+                      <td>{item.producto?.nombre ?? '-'}</td>
+                      <td>{item.cantidad}</td>
+                      <td>{item.fecha ?? '-'}</td>
                       <td>
                         <span className={`badge ${obtenerEstadoClass(item.estado)}`}>{item.estado}</span>
-                      </td>
-                      <td>{item.fecha ?? '-'}</td>
-                      <td>{item.idProduccion}</td>
-                      <td>
-                        {item.producto?.id ?? '-'}
-                        {item.producto?.nombre ? ` - ${item.producto.nombre}` : ''}
                       </td>
                       <td>
                         <button
@@ -204,7 +199,7 @@ export default function Produccion() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
                     {listaLotes.length === 0
                       ? 'No hay registros de producción.'
                       : 'No se encontraron registros que coincidan con la búsqueda.'}
