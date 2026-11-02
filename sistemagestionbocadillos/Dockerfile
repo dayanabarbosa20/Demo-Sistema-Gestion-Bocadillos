@@ -1,4 +1,4 @@
-# Etapa 1: Compilación de la aplicación Spring Boot
+# Etapa 1: Compilación del proyecto
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
