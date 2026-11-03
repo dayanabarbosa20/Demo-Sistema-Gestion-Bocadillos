@@ -14,7 +14,3 @@ INSERT INTO produccion (id_produccion, codigo_lote, id_producto, cantidad, fecha
 (3, 'P001', 5, 345, '2026-10-21', 'Pendiente'),
 (4, 'P001', 5, 232, '2026-10-20', 'En proceso')
 ON CONFLICT (id_produccion) DO NOTHING;
-
-SELECT setval(pg_get_serial_sequence('productos', 'id_producto'), COALESCE(max(id_producto), 1)) FROM productos;
-SELECT setval(pg_get_serial_sequence('proveedor', 'id_proveedor'), COALESCE(max(id_proveedor), 1)) FROM proveedor;
-SELECT setval(pg_get_serial_sequence('produccion', 'id_produccion'), COALESCE(max(id_produccion), 1)) FROM produccion;
