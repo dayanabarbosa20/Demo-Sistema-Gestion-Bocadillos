@@ -1,5 +1,5 @@
 
-POST http://localhost:8080/api/productos
+POST https://sistemagestionbocadillos.onrender.com/api/productos
 Content-Type: application/json
 
 {
@@ -8,9 +8,9 @@ Content-Type: application/json
   "cantidad": 20
 }
 ###
-GET http://localhost:8080/api/productos
+GET https://sistemagestionbocadillos.onrender.com/api/productos
 ###
-PUT http://localhost:8080/api/productos/14
+PUT https://sistemagestionbocadillos.onrender.com/api/productos/14
 Content-Type: application/json
  
  {
@@ -19,15 +19,15 @@ Content-Type: application/json
   "cantidad": 50
 }
 ###
-DELETE http://localhost:8080/api/productos/14
+DELETE https://sistemagestionbocadillos.onrender.com/api/productos/14
 
 
 ### PRUEBA ERROR 404
-GET http://localhost:8080/api/productos/999
+GET https://sistemagestionbocadillos.onrender.com/api/productos/999
 
 
 ### PRUEBA ERROR 400
-POST http://localhost:8080/api/productos
+POST https://sistemagestionbocadillos.onrender.com/api/productos
 Content-Type: application/json
 
 {
@@ -35,11 +35,11 @@ Content-Type: application/json
 }
 
 ### PRUEBA ERROR 405
-PATCH http://localhost:8080/api/productos/14
+PATCH https://sistemagestionbocadillos.onrender.com/api/productos/14
 
 
 ### 1. Registrar un nuevo usuario (Éxito - 201)
-POST http://localhost:8080/api/auth/register
+POST https://sistemagestionbocadillos.onrender.com/api/auth/register
 Content-Type: application/json
 
 {
@@ -49,7 +49,7 @@ Content-Type: application/json
 }
 
 ### 2. Registrar el mismo usuario (Error - 400)
-POST http://localhost:8080/api/auth/register
+POST https://sistemagestionbocadillos.onrender.com/api/auth/register
 Content-Type: application/json
 
 {
@@ -59,7 +59,7 @@ Content-Type: application/json
 }
 
 ### 3. Iniciar sesión (Éxito - 200)
-POST http://localhost:8080/api/auth/login
+POST https://sistemagestionbocadillos.onrender.com/api/auth/login
 Content-Type: application/json
 
 {
@@ -68,7 +68,7 @@ Content-Type: application/json
 }
 
 ### 4. Iniciar sesión con clave errónea (Error - 401)
-POST http://localhost:8080/api/auth/login
+POST https://sistemagestionbocadillos.onrender.com/api/auth/login
 Content-Type: application/json
 
 {
@@ -79,7 +79,7 @@ Content-Type: application/json
 
 
 ### 5. Crear un producto (Éxito - 201)
-POST http://localhost:8080/api/productos
+POST https://sistemagestionbocadillos.onrender.com/api/productos
 Content-Type: application/json
 
 {
@@ -89,13 +89,13 @@ Content-Type: application/json
 }
 
 ### 6. Listar todos los productos (Éxito - 200)
-GET http://localhost:8080/api/productos
+GET https://sistemagestionbocadillos.onrender.com/api/productos
 
 ### 7. Consultar producto por ID (Éxito - 200)
-GET http://localhost:8080/api/productos/19
+GET https://sistemagestionbocadillos.onrender.com/api/productos/19
 
 ### 8. Actualizar producto (Éxito - 200)
-PUT http://localhost:8080/api/productos/19
+PUT https://sistemagestionbocadillos.onrender.com/api/productos/19
 Content-Type: application/json
 
 {
@@ -105,20 +105,20 @@ Content-Type: application/json
 }
 
 ### 9. Eliminar producto (Éxito - 200)
-DELETE http://localhost:8080/api/productos/19
+DELETE https://sistemagestionbocadillos.onrender.com/api/productos/19
 
 
 
 
 ## COLECCION: SistemaGestionBocadillos
-@baseUrl = http://localhost:8080/api
+@baseUrl = https://sistemagestionbocadillos.onrender.com/api
 
 ### 1. CP01 - Consultar catálogo (Éxito - 200 OK)
-GET http://localhost:8080/api/productos
+GET https://sistemagestionbocadillos.onrender.com/api/productos
 
 
 ### 2. CP02 - Crear producto (Éxito - 201 Created)
-POST http://localhost:8080/api/productos
+POST https://sistemagestionbocadillos.onrender.com/api/productos
 Content-Type: application/json
 
 {
@@ -129,11 +129,11 @@ Content-Type: application/json
 
 
 ### 3. CP03 - Consultar por ID (Éxito - 200 OK)
-GET http://localhost:8080/api/productos/23
+GET https://sistemagestionbocadillos.onrender.com/api/productos/23
 
 
 ### 4. CP04 - Actualizar producto (Éxito - 200 OK)
-PUT http://localhost:8080/api/productos/23
+PUT https://sistemagestionbocadillos.onrender.com/api/productos/23
 Content-Type: application/json
 
 {
@@ -144,13 +144,13 @@ Content-Type: application/json
 
 
 ### 5. CP05 - Eliminar producto (Éxito - 200 OK)
-DELETE http://localhost:8080/api/productos/23
+DELETE https://sistemagestionbocadillos.onrender.com/api/productos/23
 
 ### 6. CP06 - Consultar ID inexistente (Error - 404 Not Found)
-GET http://localhost:8080/api/productos/99999
+GET https://sistemagestionbocadillos.onrender.com/api/productos/99999
 
 ### 7. CP07 - Actualizar ID inexistente (Error - 404 Not Found)
-PUT http://localhost:8080/api/productos/99999
+PUT https://sistemagestionbocadillos.onrender.com/api/productos/99999
 Content-Type: application/json
 
 {
@@ -160,4 +160,4 @@ Content-Type: application/json
 }
 
 ### 8. CP08 - Eliminar ID inexistente (Error - 404 Not Found)
-DELETE http://localhost:8080/api/productos/99999
+DELETE https://sistemagestionbocadillos.onrender.com/api/productos/99999
