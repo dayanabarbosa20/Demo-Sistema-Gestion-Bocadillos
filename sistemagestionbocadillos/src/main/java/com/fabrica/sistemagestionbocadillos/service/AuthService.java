@@ -22,6 +22,7 @@ public class AuthService {
         }
         
         // Guardar en la base de datos si todo está en orden
+        usuario.setCorreo(usuario.getEmail());
         return usuarioRepository.save(usuario);
     }
 

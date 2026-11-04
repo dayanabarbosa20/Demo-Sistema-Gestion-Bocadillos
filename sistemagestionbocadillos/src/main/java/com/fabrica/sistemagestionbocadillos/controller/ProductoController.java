@@ -13,8 +13,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(
-    origins = "http://localhost:5173",
-    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+    origins = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowCredentials = "false"
 )
 public class ProductoController {
 

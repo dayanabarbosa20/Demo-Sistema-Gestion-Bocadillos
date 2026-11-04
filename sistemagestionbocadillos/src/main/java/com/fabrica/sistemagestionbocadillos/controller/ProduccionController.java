@@ -12,7 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/produccion")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(
+    origins = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowCredentials = "false"
+)
 public class ProduccionController {
 
     private final ProduccionRepository produccionRepository;
