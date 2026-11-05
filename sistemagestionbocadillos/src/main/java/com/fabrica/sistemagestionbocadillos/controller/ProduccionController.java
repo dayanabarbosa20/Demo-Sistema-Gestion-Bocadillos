@@ -4,75 +4,60 @@ import com.fabrica.sistemagestionbocadillos.model.Produccion;
 import com.fabrica.sistemagestionbocadillos.model.Producto;
 import com.fabrica.sistemagestionbocadillos.repository.ProduccionRepository;
 import com.fabrica.sistemagestionbocadillos.repository.ProductoRepository;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/produccion")
-@CrossOrigin(
-    origins = "*",
-    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-    allowCredentials = "false"
-)
+@RequestMapping("/produccion")
+@CrossOrigin(origins = "*")
 public class ProduccionController {
 
-    private final ProduccionRepository produccionRepository;
-    private final ProductoRepository productoRepository;
+    @Autowired
+    private ProduccionRepository produccionRepository;
 
-    public ProduccionController(ProduccionRepository produccionRepository, ProductoRepository productoRepository) {
-        this.produccionRepository = produccionRepository;
-        this.productoRepository = productoRepository;
-    }
+    @Autowired
+    private ProductoRepository productoRepository;
 
     @GetMapping
-    public List<Produccion> listarProduccion() {
+    public List<Produccion> obtenerProduccion() {
         return produccionRepository.findAll();
     }
 
     @PostMapping
     public ResponseEntity<?> crearProduccion(@RequestBody Produccion produccion) {
-        Producto producto = buscarProducto(produccion.getProducto());
-        if (producto == null) {
-            return ResponseEntity.badRequest().body("El producto indicado no existe.");
+        if (produccion.getProducto() != null && produccion.getProducto().getId() != null) {
+            Producto prod = productoRepository.findById(produccion.getProducto().getId()).orElse(null);
+            produccion.setProducto(prod);
         }
-        produccion.setProducto(producto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(produccionRepository.save(produccion));
+        return ResponseEntity.ok(produccionRepository.save(produccion));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarProduccion(@PathVariable Long id, @RequestBody Produccion detalles) {
         return produccionRepository.findById(id)
-            .<ResponseEntity<?>>map(produccion -> {
-                Producto producto = buscarProducto(detalles.getProducto());
-                if (producto == null) {
-                    return ResponseEntity.badRequest().body("El producto indicado no existe.");
-                }
-                produccion.setCantidad(detalles.getCantidad());
-                produccion.setCodigoLote(detalles.getCodigoLote());
-                produccion.setEstado(detalles.getEstado());
-                produccion.setFecha(detalles.getFecha());
-                produccion.setProducto(producto);
-                return ResponseEntity.ok(produccionRepository.save(produccion));
-            })
-            .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(produccion -> {
+                    produccion.setCodigoLote(detalles.getCodigoLote());
+                    produccion.setCantidad(detalles.getCantidad());
+                    produccion.setFecha(detalles.getFecha());
+                    produccion.setEstado(detalles.getEstado());
+                    if (detalles.getProducto() != null && detalles.getProducto().getId() != null) {
+                        Producto prod = productoRepository.findById(detalles.getProducto().getId()).orElse(null);
+                        produccion.setProducto(prod);
+                    }
+                    return ResponseEntity.ok(produccionRepository.save(produccion));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarProduccion(@PathVariable Long id) {
-        if (!produccionRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> eliminarProduccion(@PathVariable Long id) {
+        if (produccionRepository.existsById(id)) {
+            produccionRepository.deleteById(id);
+            return ResponseEntity.ok().build();
         }
-        produccionRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    private Producto buscarProducto(Producto producto) {
-        if (producto == null || producto.getId() == null) {
-            return null;
-        }
-        return productoRepository.findById(producto.getId()).orElse(null);
+        return ResponseEntity.notFound().build();
     }
 }
