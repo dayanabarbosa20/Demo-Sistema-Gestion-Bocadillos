@@ -45,16 +45,16 @@ export default function Produccion() {
   };
 
   const abrirEditar = (item) => {
-    setProduccionEditando(item);
-    setFormDatos({
-      cantidad: String(item.cantidad ?? ''),
-      codigoLote: item.codigoLote ?? '',
-      estado: item.estado ?? 'Pendiente',
-      fecha: item.fecha ?? '',
-      idProducto: String(item.producto?.id ?? ''),
-    });
-    setMostrarModal(true);
-  };
+  setProduccionEditando(item);
+  setFormDatos({
+    cantidad: String(item.cantidad ?? ''),
+    codigoLote: item.codigoLote ?? '',
+    estado: item.estado ?? 'Pendiente',
+    fecha: item.fecha ?? '',
+    idProducto: String(item.producto?.idProducto ?? item.producto?.id ?? ''), // <-- Cambiado a idProducto
+  });
+  setMostrarModal(true);
+};
 
   const cerrarModal = () => {
     setMostrarModal(false);
@@ -64,12 +64,12 @@ export default function Produccion() {
   const guardarProduccion = async (event) => {
     event.preventDefault();
     const datosProduccion = {
-      cantidad: Number(formDatos.cantidad),
-      codigoLote: formDatos.codigoLote,
-      estado: formDatos.estado,
-      fecha: formDatos.fecha,
-      producto: { id: Number(formDatos.idProducto) },
-    };
+  cantidad: Number(formDatos.cantidad),
+  codigoLote: formDatos.codigoLote,
+  estado: formDatos.estado,
+  fecha: formDatos.fecha,
+  producto: { idProducto: Number(formDatos.idProducto) } // <-- Debe decir idProducto
+};
 
     try {
       if (produccionEditando) {
@@ -254,17 +254,16 @@ export default function Produccion() {
                   <select
                     id="productoProduccion"
                     value={formDatos.idProducto}
-                    onChange={(event) => setFormDatos({ ...formDatos, idProducto: event.target.value })}
-                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                    onChange={(e) => setFormDatos({ ...formDatos, idProducto: e.target.value })}
                     required
-                  >
-                    <option value="">Selecciona un producto</option>
-                    {productos.map((producto) => (
-                      <option key={producto.id} value={producto.id}>
-                        {producto.id} - {producto.nombre}
-                      </option>
-                    ))}
-                  </select>
+>
+  <option value="">Selecciona un producto</option>
+  {productos.map((prod) => (
+    <option key={prod.idProducto} value={prod.idProducto}>
+      {prod.nombre}
+    </option>
+  ))}
+</select>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <label htmlFor="cantidadProduccion" style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Cantidad</label>
