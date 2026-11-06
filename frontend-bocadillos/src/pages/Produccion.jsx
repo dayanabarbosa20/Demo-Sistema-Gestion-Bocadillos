@@ -69,7 +69,7 @@ export default function Produccion() {
       codigoLote: formDatos.codigoLote,
       estado: formDatos.estado,
       fecha: formDatos.fecha,
-      producto: prodId ? { idProducto: prodId, id: prodId } : null,
+      producto: prodId ? { id: prodId } : null,
     };
 
     try {

@@ -5,6 +5,7 @@ import com.fabrica.sistemagestionbocadillos.model.Producto;
 import com.fabrica.sistemagestionbocadillos.repository.ProduccionRepository;
 import com.fabrica.sistemagestionbocadillos.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,37 +29,43 @@ public class ProduccionController {
 
     @PostMapping
     public ResponseEntity<?> crearProduccion(@RequestBody Produccion produccion) {
-        if (produccion.getProducto() != null && produccion.getProducto().getId() != null) {
-            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId()).orElse(null);
-            if (productoExistente != null) {
-                produccion.setProducto(productoExistente);
-            }
+        try {
+            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
+            produccion.setProducto(productoExistente);
+            Produccion produccionGuardada = produccionRepository.save(produccion);
+            return ResponseEntity.ok(produccionGuardada);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en backend: " + e.getMessage());
         }
-        Produccion produccionGuardada = produccionRepository.save(produccion);
-        return ResponseEntity.ok(produccionGuardada);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarProduccion(@PathVariable Long id, @RequestBody Produccion produccion) {
-        if (!produccionRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        produccion.setIdProduccion(id);
-        if (produccion.getProducto() != null && produccion.getProducto().getId() != null) {
-            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId()).orElse(null);
-            if (productoExistente != null) {
-                produccion.setProducto(productoExistente);
+        try {
+            if (!produccionRepository.existsById(id)) {
+                return ResponseEntity.notFound().build();
             }
+            produccion.setIdProduccion(id);
+            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
+            produccion.setProducto(productoExistente);
+            return ResponseEntity.ok(produccionRepository.save(produccion));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en backend: " + e.getMessage());
         }
-        return ResponseEntity.ok(produccionRepository.save(produccion));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarProduccion(@PathVariable Long id) {
-        if (!produccionRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+        try {
+            if (!produccionRepository.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            produccionRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en backend: " + e.getMessage());
         }
-        produccionRepository.deleteById(id);
-        return ResponseEntity.ok().build();
     }
 }
