@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppShell from '../components/AppShell';
 import api from '../services/api';
 
@@ -10,7 +10,9 @@ export default function Proveedores() {
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [nombreAnterior, setNombreAnterior] = useState('');
+  const [proveedorEditando, setProveedorEditando] = useState(null);
+  const [guardando, setGuardando] = useState(false);
+  const guardadoEnCurso = useRef(false);
   const [formDatos, setFormDatos] = useState({
     nombre: '',
     telefono: '',
@@ -37,6 +39,8 @@ export default function Proveedores() {
     return estado === 'Activo' ? 'status-active' : 'status-inactive';
   };
 
+  const obtenerId = (proveedor) => proveedor.id_proveedor ?? proveedor.idProveedor;
+
   const proveedoresFiltrados = listaProveedores.filter((item) =>
     item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
     item.correo.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -44,7 +48,7 @@ export default function Proveedores() {
   );
 
   const seleccionarFila = (item) => {
-    if (proveedorSeleccionado?.nombre === item.nombre) {
+    if (obtenerId(proveedorSeleccionado ?? {}) === obtenerId(item)) {
       setProveedorSeleccionado(null);
     } else {
       setProveedorSeleccionado(item);
@@ -63,31 +67,34 @@ export default function Proveedores() {
       return;
     }
     setModoEdicion(true);
-    setNombreAnterior(item.nombre);
+    setProveedorEditando(item);
     setFormDatos({ ...item });
     setMostrarModal(true);
   };
 
-  const handleEliminar = async (nombreEliminar = proveedorSeleccionado?.nombre) => {
-    if (!nombreEliminar) {
+  const handleEliminar = async (proveedor = proveedorSeleccionado) => {
+    if (!proveedor || !obtenerId(proveedor)) {
       alert('Por favor selecciona un proveedor para eliminar.');
       return;
     }
 
-    if (window.confirm(`¿Estás seguro de que deseas eliminar a "${nombreEliminar}"?`)) {
+    if (window.confirm(`¿Estás seguro de que deseas eliminar a "${proveedor.nombre}"?`)) {
       try {
-        await api.delete(`/proveedores/${encodeURIComponent(nombreEliminar)}`);
+        await api.delete(`/proveedores/id/${obtenerId(proveedor)}`);
         setProveedorSeleccionado(null);
         await cargarProveedores();
       } catch (error) {
         console.error('Error al eliminar proveedor:', error);
-        alert('No se pudo eliminar el proveedor.');
+        alert(error.response?.status === 404
+          ? 'El proveedor ya no existe o el servidor todavía no tiene actualizado el endpoint por ID.'
+          : 'No se pudo eliminar el proveedor.');
       }
     }
   };
 
   const handleGuardar = async (e) => {
     e.preventDefault();
+    if (guardadoEnCurso.current) return;
     if (!formDatos.nombre || !formDatos.telefono || !formDatos.correo) {
       alert('Por favor completa todos los campos.');
       return;
@@ -101,16 +108,18 @@ export default function Proveedores() {
     };
 
     if (listaProveedores.some((item) =>
-      item.nombre.toLowerCase() === datosProveedor.nombre.toLowerCase() &&
-      (!modoEdicion || item.nombre !== nombreAnterior)
+      item.nombre.trim().toLowerCase() === datosProveedor.nombre.toLowerCase() &&
+      (!modoEdicion || obtenerId(item) !== obtenerId(proveedorEditando))
     )) {
       alert('Ya existe un proveedor con este nombre.');
       return;
     }
 
+    guardadoEnCurso.current = true;
+    setGuardando(true);
     try {
       if (modoEdicion) {
-        await api.put(`/proveedores/${encodeURIComponent(nombreAnterior)}`, datosProveedor);
+        await api.put(`/proveedores/id/${obtenerId(proveedorEditando)}`, datosProveedor);
       } else {
         await api.post('/proveedores', datosProveedor);
       }
@@ -119,7 +128,12 @@ export default function Proveedores() {
       await cargarProveedores();
     } catch (error) {
       console.error('Error al guardar proveedor:', error);
-      alert('No se pudo guardar el proveedor.');
+      alert(error.response?.status === 409
+        ? 'Ya existe un proveedor con ese nombre.'
+        : 'No se pudo guardar el proveedor.');
+    } finally {
+      guardadoEnCurso.current = false;
+      setGuardando(false);
     }
   };
 
@@ -187,10 +201,10 @@ export default function Proveedores() {
             <tbody>
               {proveedoresFiltrados.length > 0 ? (
                 proveedoresFiltrados.map((item) => {
-                  const esSeleccionado = proveedorSeleccionado?.nombre === item.nombre;
+                  const esSeleccionado = obtenerId(proveedorSeleccionado ?? {}) === obtenerId(item);
                   return (
                     <tr 
-                      key={item.nombre}
+                      key={obtenerId(item)}
                       onClick={() => seleccionarFila(item)}
                       style={{
                         backgroundColor: esSeleccionado ? 'rgba(46, 125, 50, 0.1)' : 'transparent',
@@ -220,7 +234,7 @@ export default function Proveedores() {
                           className="action-btn delete-inline"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleEliminar(item.nombre);
+                            handleEliminar(item);
                           }}
                           title="Eliminar"
                         >
@@ -340,8 +354,8 @@ export default function Proveedores() {
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-success">
-                  {modoEdicion ? 'Guardar Cambios' : 'Crear Proveedor'}
+                <button type="submit" className="btn btn-success" disabled={guardando}>
+                  {guardando ? 'Guardando...' : modoEdicion ? 'Guardar Cambios' : 'Crear Proveedor'}
                 </button>
               </div>
             </form>

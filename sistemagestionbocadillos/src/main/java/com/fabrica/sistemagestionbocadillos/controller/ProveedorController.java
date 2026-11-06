@@ -46,8 +46,42 @@ public class ProveedorController {
 
     @PostMapping
     public ResponseEntity<Proveedor> crearProveedor(@RequestBody Proveedor proveedor) {
+        proveedor.setNombre(proveedor.getNombre().trim());
+        if (proveedorRepository.existsByNombreIgnoreCase(proveedor.getNombre())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         proveedor.setIdProveedor(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(proveedorRepository.save(proveedor));
+    }
+
+    @PutMapping("/id/{id}")
+    public ResponseEntity<Proveedor> actualizarProveedorPorId(
+            @PathVariable Long id,
+            @RequestBody Proveedor detalles
+    ) {
+        return proveedorRepository.findById(id)
+                .map(proveedor -> {
+                    String nuevoNombre = detalles.getNombre().trim();
+                    if (!proveedor.getNombre().equalsIgnoreCase(nuevoNombre)
+                            && proveedorRepository.existsByNombreIgnoreCaseAndIdProveedorNot(nuevoNombre, id)) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT).<Proveedor>build();
+                    }
+                    proveedor.setNombre(nuevoNombre);
+                    proveedor.setTelefono(detalles.getTelefono());
+                    proveedor.setCorreo(detalles.getCorreo());
+                    proveedor.setEstado(detalles.getEstado());
+                    return ResponseEntity.ok(proveedorRepository.save(proveedor));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<Void> eliminarProveedorPorId(@PathVariable Long id) {
+        if (!proveedorRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        proveedorRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{nombre}")

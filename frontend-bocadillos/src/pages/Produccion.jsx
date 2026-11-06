@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
-import api from '../services/api';
+import { apiRoot, getApiErrorMessage } from '../services/api';
 
 export default function Produccion() {
   const [listaLotes, setListaLotes] = useState([]);
@@ -20,7 +20,7 @@ export default function Produccion() {
 
   const cargarProduccion = async () => {
     try {
-      const response = await api.get('/produccion');
+      const response = await apiRoot.get('/produccion');
       setListaLotes(Array.isArray(response.data) ? response.data : []);
       setError('');
     } catch (requestError) {
@@ -33,7 +33,7 @@ export default function Produccion() {
 
   useEffect(() => {
     cargarProduccion();
-    api.get('/productos')
+    apiRoot.get('/api/productos')
       .then((response) => setProductos(Array.isArray(response.data) ? response.data : []))
       .catch((requestError) => console.error('Error al cargar productos para producción:', requestError));
   }, []);
@@ -74,22 +74,22 @@ export default function Produccion() {
 
     try {
       if (produccionEditando) {
-        await api.put(`/produccion/${produccionEditando.idProduccion}`, datosProduccion);
+        await apiRoot.put(`/produccion/${produccionEditando.idProduccion}`, datosProduccion);
       } else {
-        await api.post('/produccion', datosProduccion);
+        await apiRoot.post('/produccion', datosProduccion);
       }
       cerrarModal();
       await cargarProduccion();
     } catch (requestError) {
       console.error('Error al guardar producción:', requestError);
-      window.alert(requestError.response?.data || 'No se pudo guardar el registro de producción.');
+      window.alert(getApiErrorMessage(requestError, 'No se pudo guardar el registro de producción.'));
     }
   };
 
   const eliminarProduccion = async (item) => {
     if (!window.confirm(`¿Seguro que deseas eliminar el lote ${item.codigoLote}?`)) return;
     try {
-      await api.delete(`/produccion/${item.idProduccion}`);
+      await apiRoot.delete(`/produccion/${item.idProduccion}`);
       await cargarProduccion();
     } catch (requestError) {
       console.error('Error al eliminar producción:', requestError);
