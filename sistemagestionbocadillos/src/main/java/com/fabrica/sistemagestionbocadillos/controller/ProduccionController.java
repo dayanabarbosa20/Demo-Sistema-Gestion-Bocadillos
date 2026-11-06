@@ -28,16 +28,10 @@ public class ProduccionController {
 
     @PostMapping
     public ResponseEntity<?> crearProduccion(@RequestBody Produccion produccion) {
-        if (produccion.getProducto() != null) {
-            Long prodId = produccion.getProducto().getIdProducto();
-            if (prodId == null) {
-                prodId = produccion.getProducto().getId();
-            }
-            if (prodId != null) {
-                Producto productoExistente = productoRepository.findById(prodId).orElse(null);
-                if (productoExistente != null) {
-                    produccion.setProducto(productoExistente);
-                }
+        if (produccion.getProducto() != null && produccion.getProducto().getId() != null) {
+            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId()).orElse(null);
+            if (productoExistente != null) {
+                produccion.setProducto(productoExistente);
             }
         }
         Produccion produccionGuardada = produccionRepository.save(produccion);
@@ -50,16 +44,10 @@ public class ProduccionController {
             return ResponseEntity.notFound().build();
         }
         produccion.setIdProduccion(id);
-        if (produccion.getProducto() != null) {
-            Long prodId = produccion.getProducto().getIdProducto();
-            if (prodId == null) {
-                prodId = produccion.getProducto().getId();
-            }
-            if (prodId != null) {
-                Producto productoExistente = productoRepository.findById(prodId).orElse(null);
-                if (productoExistente != null) {
-                    produccion.setProducto(productoExistente);
-                }
+        if (produccion.getProducto() != null && produccion.getProducto().getId() != null) {
+            Producto productoExistente = productoRepository.findById(produccion.getProducto().getId()).orElse(null);
+            if (productoExistente != null) {
+                produccion.setProducto(productoExistente);
             }
         }
         return ResponseEntity.ok(produccionRepository.save(produccion));
