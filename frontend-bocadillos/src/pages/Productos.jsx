@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
 import api from '../services/api';
 
+const CATEGORIAS_PRODUCTO = [
+  'Bocadillo de Guayaba',
+  'Bocadillo con Arequipe',
+  'Bocadillo en Hoja de Bijao',
+  'Lonja y Espejuelo',
+  'Dulces Combinados / Herpos'
+];
+
 function Productos() {
   const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState('');
+  const [categoria, setCategoria] = useState('');
   const [precio, setPrecio] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -33,6 +42,7 @@ function Productos() {
     try {
       const datosProducto = {
         nombre,
+        categoria,
         precio: parseFloat(precio),
         cantidad: productoEditando?.cantidad ?? null,
       };
@@ -43,6 +53,7 @@ function Productos() {
         await api.post('/productos', datosProducto);
       }
       setNombre('');
+      setCategoria('');
       setPrecio('');
       setProductoEditando(null);
       setMostrarModal(false);
@@ -55,6 +66,7 @@ function Productos() {
   const handleEditar = (producto) => {
     setProductoEditando(producto);
     setNombre(producto.nombre);
+    setCategoria(producto.categoria ?? '');
     setPrecio(String(producto.precio));
     setMostrarModal(true);
   };
@@ -62,6 +74,7 @@ function Productos() {
   const handleAbrirCrear = () => {
     setProductoEditando(null);
     setNombre('');
+    setCategoria('');
     setPrecio('');
     setMostrarModal(true);
   };
@@ -119,6 +132,7 @@ function Productos() {
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
+                <th>Categoría / Tipo</th>
                 <th>Precio</th>
                 <th>Acciones</th>
               </tr>
@@ -129,6 +143,7 @@ function Productos() {
                   <tr key={producto.id}>
                     <td>{producto.id}</td>
                     <td>{producto.nombre}</td>
+                    <td>{producto.categoria || '—'}</td>
                     <td>${producto.precio}</td>
                     <td>
                       <button
@@ -152,7 +167,7 @@ function Productos() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
                     {productos.length === 0
                       ? 'No hay productos registrados o el backend de Java está apagado.'
                       : 'No se encontraron productos que coincidan con la búsqueda.'}
@@ -207,6 +222,20 @@ function Productos() {
                   style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                   required
                 />
+              </div>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Categoría / Tipo</label>
+                <select
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value)}
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  required
+                >
+                  <option value="" disabled>Selecciona una categoría</option>
+                  {CATEGORIAS_PRODUCTO.map((opcion) => (
+                    <option key={opcion} value={opcion}>{opcion}</option>
+                  ))}
+                </select>
               </div>
               <div style={{ marginBottom: '18px' }}>
                 <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Precio ($)</label>

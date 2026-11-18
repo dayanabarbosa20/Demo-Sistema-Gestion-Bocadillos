@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import AppShell from '../components/AppShell';
 
 const INVENTORY_STORAGE_KEY = 'bocadillos-inventory';
+const CATEGORIAS_PRODUCTO = [
+  'Bocadillo de Guayaba',
+  'Bocadillo con Arequipe',
+  'Bocadillo en Hoja de Bijao',
+  'Lonja y Espejuelo',
+  'Dulces Combinados / Herpos'
+];
 
 // Datos iniciales
 const datosIniciales = [
-  { codigo: '001', producto: 'Bocadillo Veleño', cantidad: 100, estado: 'Disponible', estadoClass: 'status-available' },
-  { codigo: '002', producto: 'Guayaba', cantidad: 50, estado: 'Disponible', estadoClass: 'status-available' },
-  { codigo: '003', producto: 'Azúcar', cantidad: 30, estado: 'Bajo Stock', estadoClass: 'status-low-stock' },
+  { codigo: '001', producto: 'Bocadillo Veleño', categoria: 'Bocadillo de Guayaba', cantidad: 100, estado: 'Disponible', estadoClass: 'status-available' },
+  { codigo: '002', producto: 'Guayaba', categoria: 'Bocadillo de Guayaba', cantidad: 50, estado: 'Disponible', estadoClass: 'status-available' },
+  { codigo: '003', producto: 'Azúcar', categoria: 'Dulces Combinados / Herpos', cantidad: 30, estado: 'Bajo Stock', estadoClass: 'status-low-stock' },
 ];
 
 export default function Inventario() {
@@ -29,6 +36,7 @@ export default function Inventario() {
   const [formDatos, setFormDatos] = useState({
     codigo: '',
     producto: '',
+    categoria: '',
     cantidad: '',
     estado: 'Disponible'
   });
@@ -59,7 +67,7 @@ export default function Inventario() {
   // --- ABRIR MODAL CREAR ---
   const handleAbrirCrear = () => {
     setModoEdicion(false);
-    setFormDatos({ codigo: '', producto: '', cantidad: '', estado: 'Disponible' });
+    setFormDatos({ codigo: '', producto: '', categoria: '', cantidad: '', estado: 'Disponible' });
     setMostrarModal(true);
   };
 
@@ -70,7 +78,7 @@ export default function Inventario() {
       return;
     }
     setModoEdicion(true);
-    setFormDatos({ ...prod });
+    setFormDatos({ ...prod, categoria: prod.categoria ?? '' });
     setMostrarModal(true);
   };
 
@@ -183,6 +191,7 @@ export default function Inventario() {
               <tr>
                 <th>Código</th>
                 <th>Producto</th>
+                <th>Categoría / Tipo</th>
                 <th>Cantidad</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -203,6 +212,7 @@ export default function Inventario() {
                     >
                       <td>{item.codigo}</td>
                       <td>{item.producto}</td>
+                      <td>{item.categoria || '—'}</td>
                       <td>{item.cantidad}</td>
                       <td>
                         <span className={`badge ${item.estadoClass}`}>{item.estado}</span>
@@ -236,7 +246,7 @@ export default function Inventario() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
                     No se encontraron productos que coincidan con la búsqueda.
                   </td>
                 </tr>
@@ -306,6 +316,21 @@ export default function Inventario() {
                   placeholder="Ej: Bocadillo de Arequipe"
                   required
                 />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Categoría / Tipo</label>
+                <select
+                  value={formDatos.categoria}
+                  onChange={(e) => setFormDatos({ ...formDatos, categoria: e.target.value })}
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  required
+                >
+                  <option value="" disabled>Selecciona una categoría</option>
+                  {CATEGORIAS_PRODUCTO.map((categoria) => (
+                    <option key={categoria} value={categoria}>{categoria}</option>
+                  ))}
+                </select>
               </div>
 
               <div style={{ marginBottom: '18px' }}>

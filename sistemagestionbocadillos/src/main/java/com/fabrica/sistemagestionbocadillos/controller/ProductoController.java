@@ -51,6 +51,7 @@ public class ProductoController {
         if (productoOpt.isPresent()) {
             Producto producto = productoOpt.get();
             producto.setNombre(detalles.getNombre());
+            producto.setCategoria(detalles.getCategoria());
             producto.setPrecio(detalles.getPrecio());
             producto.setCantidad(detalles.getCantidad());
             return ResponseEntity.ok(productoRepository.save(producto));
