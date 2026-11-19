@@ -2,9 +2,14 @@ package com.fabrica.sistemagestionbocadillos.controller;
 
 import com.fabrica.sistemagestionbocadillos.model.Producto;
 import com.fabrica.sistemagestionbocadillos.repository.ProductoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +24,27 @@ import java.util.Optional;
 )
 public class ProductoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductoController.class);
+
     @Autowired
     private ProductoRepository productoRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     // 1. CREAR (POST)
     @PostMapping
+    @Transactional
     public ResponseEntity<Producto> guardarProducto(@RequestBody Producto producto) {
+        if (productoRepository.count() == 0) {
+            try {
+                entityManager.createNativeQuery(
+                    "SELECT setval(pg_get_serial_sequence('productos', 'id_producto'), 1, false)"
+                ).getSingleResult();
+            } catch (Exception e) {
+                logger.warn("No se pudo reiniciar la secuencia de productos", e);
+            }
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepository.save(producto));
     }
 
