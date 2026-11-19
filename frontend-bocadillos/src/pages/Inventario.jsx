@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
 import api from '../services/api';
 
@@ -43,45 +43,56 @@ function formatearFecha(fecha) {
   return anio && mes && dia ? `${dia}/${mes}/${anio}` : fecha;
 }
 
-const campoClase = 'w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-sm text-[#2D2216] focus:border-[#4A7C59] focus:outline-none focus:ring-1 focus:ring-[#4A7C59]';
+function formatearCodigo(codigo) {
+  const texto = String(codigo ?? '').trim();
+  return /^\d+$/.test(texto) ? texto.padStart(3, '0') : texto;
+}
+
+const campoClase = 'w-full rounded border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-[#2D2216] focus:border-[#14532d] focus:outline-none focus:ring-1 focus:ring-[#14532d]';
 
 export default function Inventario() {
   const [listaProductos, setListaProductos] = useState(leerInventarioGuardado);
   const [productosCatalogo, setProductosCatalogo] = useState([]);
   const [cargandoProductos, setCargandoProductos] = useState(true);
   const [errorCatalogo, setErrorCatalogo] = useState('');
+  const [errorFormulario, setErrorFormulario] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
   const [registroEditandoId, setRegistroEditandoId] = useState(null);
+  const [modoManual, setModoManual] = useState(false);
   const [formDatos, setFormDatos] = useState({
     productoId: '',
+    codigoManual: '',
+    nombreManual: '',
     cantidad: '',
     unidad: 'Unidad',
-    stockMinimo: '',
+    stockMinimo: '0',
     vence: '',
   });
 
-  useEffect(() => {
-    let activo = true;
-
-    api.get('/productos')
-      .then((response) => {
-        if (activo) {
-          setProductosCatalogo(Array.isArray(response.data) ? response.data : []);
-          setErrorCatalogo('');
-        }
-      })
-      .catch(() => {
-        if (activo) setErrorCatalogo('No fue posible cargar el catálogo de productos.');
-      })
-      .finally(() => {
-        if (activo) setCargandoProductos(false);
-      });
-
-    return () => {
-      activo = false;
-    };
+  const cargarCatalogo = useCallback(async () => {
+    setCargandoProductos(true);
+    setErrorCatalogo('');
+    try {
+      const response = await api.get('/productos');
+      const datos = Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.data?.content)
+          ? response.data.content
+          : Array.isArray(response.data?.data)
+            ? response.data.data
+            : [];
+      setProductosCatalogo(datos);
+    } catch {
+      setErrorCatalogo('No fue posible cargar el catálogo desde el servidor. Puedes reintentar o ingresar el producto manualmente.');
+    } finally {
+      setCargandoProductos(false);
+    }
   }, []);
+
+  useEffect(() => {
+    cargarCatalogo();
+  }, [cargarCatalogo]);
 
   const actualizarInventario = (actualizador) => {
     setListaProductos((anterior) => {
@@ -97,40 +108,84 @@ export default function Inventario() {
 
   const abrirModal = () => {
     setRegistroEditandoId(null);
-    setFormDatos({ productoId: '', cantidad: '', unidad: 'Unidad', stockMinimo: '', vence: '' });
+    setErrorFormulario('');
+    setModoManual(false);
+    setFormDatos({
+      productoId: '',
+      codigoManual: '',
+      nombreManual: '',
+      cantidad: '',
+      unidad: 'Unidad',
+      stockMinimo: '0',
+      vence: '',
+    });
     setMostrarModal(true);
+
+    if (productosCatalogo.length === 0 && !cargandoProductos) {
+      cargarCatalogo();
+    }
   };
 
   const abrirEdicion = (registro) => {
     setRegistroEditandoId(registro.id);
+    setErrorFormulario('');
+
+    const coincidenciaCatalogo = productosCatalogo.find(
+      (p) => String(p.id) === String(registro.codigo) || Number(p.id) === Number(registro.codigo)
+    );
+
+    setModoManual(!coincidenciaCatalogo);
     setFormDatos({
-      productoId: registro.codigo,
+      productoId: coincidenciaCatalogo ? String(coincidenciaCatalogo.id) : '',
+      codigoManual: registro.codigo,
+      nombreManual: registro.producto,
       cantidad: String(registro.cantidad),
       unidad: registro.unidad,
       stockMinimo: String(registro.stockMinimo),
-      vence: registro.vence,
+      vence: registro.vence || '',
     });
     setMostrarModal(true);
   };
 
   const guardarEntrada = (event) => {
     event.preventDefault();
-    const producto = productosCatalogo.find((item) => String(item.id) === formDatos.productoId);
-    if (!producto) return;
+    setErrorFormulario('');
+
+    let codigoFinal = '';
+    let nombreFinal = '';
+
+    if (modoManual || productosCatalogo.length === 0) {
+      codigoFinal = formatearCodigo(formDatos.codigoManual);
+      nombreFinal = formDatos.nombreManual.trim();
+      if (!codigoFinal || !nombreFinal) {
+        setErrorFormulario('Ingresa el código y el nombre del producto.');
+        return;
+      }
+    } else {
+      const producto = productosCatalogo.find(
+        (item) => String(item.id) === String(formDatos.productoId) || Number(item.id) === Number(formDatos.productoId)
+      );
+      if (!producto) {
+        setErrorFormulario('Selecciona un producto válido del catálogo.');
+        return;
+      }
+      codigoFinal = formatearCodigo(producto.id);
+      nombreFinal = producto.nombre;
+    }
 
     const datosRegistro = {
-      codigo: String(producto.id),
-      producto: producto.nombre,
+      codigo: codigoFinal,
+      producto: nombreFinal,
       cantidad: Number(formDatos.cantidad),
       unidad: formDatos.unidad,
-      stockMinimo: Number(formDatos.stockMinimo),
+      stockMinimo: Number(formDatos.stockMinimo) || 0,
       vence: formDatos.vence,
     };
 
     if (registroEditandoId) {
-      actualizarInventario((anterior) => anterior.map((item) => (
-        item.id === registroEditandoId ? { ...item, ...datosRegistro } : item
-      )));
+      actualizarInventario((anterior) =>
+        anterior.map((item) => (item.id === registroEditandoId ? { ...item, ...datosRegistro } : item))
+      );
     } else {
       const nuevoRegistro = {
         ...datosRegistro,
@@ -147,11 +202,13 @@ export default function Inventario() {
     actualizarInventario((anterior) => anterior.filter((item) => item.id !== id));
   };
 
+  const usarEntradaManual = modoManual || (!cargandoProductos && productosCatalogo.length === 0);
+
   return (
     <AppShell activePath="/inventario">
       <section className="content-body text-[#2D2216]">
         <div className="page-title-zone">
-          <div className="title-icon bg-[#4A7C59] text-white">
+          <div className="title-icon">
             <span className="material-symbols-outlined size-xl">inventory_2</span>
           </div>
           <div>
@@ -164,7 +221,7 @@ export default function Inventario() {
           <div className="crud-buttons">
             <button
               type="button"
-              className="btn bg-[#4A7C59] text-white hover:bg-[#3c6749]"
+              className="btn btn-primary"
               onClick={abrirModal}
             >
               <span className="material-symbols-outlined">add</span> Registrar Entrada
@@ -183,14 +240,22 @@ export default function Inventario() {
         </div>
 
         {errorCatalogo && (
-          <p className="mb-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">
-            {errorCatalogo}
-          </p>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">
+            <span>{errorCatalogo}</span>
+            <button
+              type="button"
+              className="rounded border border-amber-400 bg-white px-2.5 py-1 text-xs font-medium text-amber-900 hover:bg-amber-100"
+              onClick={cargarCatalogo}
+              disabled={cargandoProductos}
+            >
+              {cargandoProductos ? 'Cargando...' : 'Reintentar'}
+            </button>
+          </div>
         )}
 
         <div className="table-container overflow-x-auto">
           <table className="data-table min-w-[1050px]">
-            <thead className="bg-[#DCE9E2]">
+            <thead>
               <tr>
                 <th>Código</th>
                 <th>Producto</th>
@@ -271,27 +336,76 @@ export default function Inventario() {
             aria-modal="true"
             aria-labelledby="titulo-entrada-inventario"
           >
-            <h3 id="titulo-entrada-inventario" className="mb-5 text-xl font-semibold text-[#2D2216]">
-              {registroEditandoId ? 'Editar Entrada de Inventario' : 'Registrar Entrada de Inventario'}
-            </h3>
-            <form onSubmit={guardarEntrada} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label className="sm:col-span-2">
-                <span className="mb-1 block text-sm font-medium">Producto</span>
-                <select
-                  className={campoClase}
-                  value={formDatos.productoId}
-                  onChange={(event) => setFormDatos({ ...formDatos, productoId: event.target.value })}
-                  required
-                  disabled={cargandoProductos || productosCatalogo.length === 0}
+            <div className="mb-5 flex items-center justify-between gap-2">
+              <h3 id="titulo-entrada-inventario" className="text-xl font-semibold text-[#2D2216]">
+                {registroEditandoId ? 'Editar Entrada de Inventario' : 'Registrar Entrada de Inventario'}
+              </h3>
+
+              {productosCatalogo.length > 0 && (
+                <button
+                  type="button"
+                  className="text-xs font-medium text-[#14532d] underline hover:opacity-80"
+                  onClick={() => setModoManual((prev) => !prev)}
                 >
-                  <option value="" disabled>
-                    {cargandoProductos ? 'Cargando productos...' : 'Selecciona un producto del catálogo'}
-                  </option>
-                  {productosCatalogo.map((producto) => (
-                    <option key={producto.id} value={String(producto.id)}>{producto.nombre}</option>
-                  ))}
-                </select>
-              </label>
+                  {modoManual ? 'Seleccionar del catálogo' : 'Ingresar manualmente'}
+                </button>
+              )}
+            </div>
+
+            {errorFormulario && (
+              <p className="mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">
+                {errorFormulario}
+              </p>
+            )}
+
+            <form onSubmit={guardarEntrada} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {!usarEntradaManual ? (
+                <label className="sm:col-span-2">
+                  <span className="mb-1 block text-sm font-medium">Producto</span>
+                  <select
+                    className={campoClase}
+                    value={formDatos.productoId}
+                    onChange={(event) => setFormDatos({ ...formDatos, productoId: event.target.value })}
+                    required
+                    disabled={cargandoProductos}
+                  >
+                    <option value="" disabled>
+                      {cargandoProductos ? 'Cargando productos del catálogo...' : 'Selecciona un producto del catálogo'}
+                    </option>
+                    {productosCatalogo.map((producto) => (
+                      <option key={producto.id} value={String(producto.id)}>
+                        {formatearCodigo(producto.id)} - {producto.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <>
+                  <label>
+                    <span className="mb-1 block text-sm font-medium">Código</span>
+                    <input
+                      className={campoClase}
+                      type="text"
+                      placeholder="Ej. 003"
+                      value={formDatos.codigoManual}
+                      onChange={(event) => setFormDatos({ ...formDatos, codigoManual: event.target.value })}
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    <span className="mb-1 block text-sm font-medium">Nombre del producto</span>
+                    <input
+                      className={campoClase}
+                      type="text"
+                      placeholder="Ej. Bocadillo Veleño x12"
+                      value={formDatos.nombreManual}
+                      onChange={(event) => setFormDatos({ ...formDatos, nombreManual: event.target.value })}
+                      required
+                    />
+                  </label>
+                </>
+              )}
 
               <label>
                 <span className="mb-1 block text-sm font-medium">Cantidad</span>
@@ -300,6 +414,7 @@ export default function Inventario() {
                   type="number"
                   min="0"
                   step="any"
+                  placeholder="0"
                   value={formDatos.cantidad}
                   onChange={(event) => setFormDatos({ ...formDatos, cantidad: event.target.value })}
                   required
@@ -314,7 +429,9 @@ export default function Inventario() {
                   onChange={(event) => setFormDatos({ ...formDatos, unidad: event.target.value })}
                   required
                 >
-                  {UNIDADES.map((unidad) => <option key={unidad} value={unidad}>{unidad}</option>)}
+                  {UNIDADES.map((unidad) => (
+                    <option key={unidad} value={unidad}>{unidad}</option>
+                  ))}
                 </select>
               </label>
 
@@ -327,18 +444,16 @@ export default function Inventario() {
                   step="any"
                   value={formDatos.stockMinimo}
                   onChange={(event) => setFormDatos({ ...formDatos, stockMinimo: event.target.value })}
-                  required
                 />
               </label>
 
               <label>
-                <span className="mb-1 block text-sm font-medium">Vencimiento del lote</span>
+                <span className="mb-1 block text-sm font-medium">Vencimiento del lote (opcional)</span>
                 <input
                   className={campoClase}
                   type="date"
                   value={formDatos.vence}
                   onChange={(event) => setFormDatos({ ...formDatos, vence: event.target.value })}
-                  required
                 />
               </label>
 
@@ -348,8 +463,8 @@ export default function Inventario() {
                 </button>
                 <button
                   type="submit"
-                  className="btn bg-[#4A7C59] text-white hover:bg-[#3c6749]"
-                  disabled={cargandoProductos || productosCatalogo.length === 0}
+                  className="btn btn-primary"
+                  disabled={cargandoProductos && !usarEntradaManual}
                 >
                   Guardar Entrada
                 </button>
