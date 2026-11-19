@@ -9,11 +9,20 @@ const CATEGORIAS_PRODUCTO = [
   'Lonja y Espejuelo',
   'Dulces Combinados / Herpos'
 ];
+const UNIDADES_PRODUCTO = ['Caja', 'Unidad', 'Libra', 'Arroba', 'Kilo'];
+
+const formatearCodigo = (id) => String(id).padStart(3, '0');
+const formatearPrecio = (precio) => new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+}).format(Number(precio) || 0);
 
 function Productos() {
   const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [unidad, setUnidad] = useState('Unidad');
   const [precio, setPrecio] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -33,8 +42,8 @@ function Productos() {
   }, []);
 
   const productosFiltrados = productos.filter((producto) =>
-    producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    String(producto.id).includes(busqueda)
+    [formatearCodigo(producto.id), String(producto.id), producto.nombre, producto.categoria]
+      .some((valor) => String(valor ?? '').toLowerCase().includes(busqueda.trim().toLowerCase()))
   );
 
   const handleSubmit = async (e) => {
@@ -43,6 +52,7 @@ function Productos() {
       const datosProducto = {
         nombre,
         categoria,
+        unidad,
         precio: parseFloat(precio),
         cantidad: productoEditando?.cantidad ?? null,
       };
@@ -54,6 +64,7 @@ function Productos() {
       }
       setNombre('');
       setCategoria('');
+      setUnidad('Unidad');
       setPrecio('');
       setProductoEditando(null);
       setMostrarModal(false);
@@ -67,6 +78,7 @@ function Productos() {
     setProductoEditando(producto);
     setNombre(producto.nombre);
     setCategoria(producto.categoria ?? '');
+    setUnidad(producto.unidad ?? 'Unidad');
     setPrecio(String(producto.precio));
     setMostrarModal(true);
   };
@@ -75,6 +87,7 @@ function Productos() {
     setProductoEditando(null);
     setNombre('');
     setCategoria('');
+    setUnidad('Unidad');
     setPrecio('');
     setMostrarModal(true);
   };
@@ -119,7 +132,7 @@ function Productos() {
             <span className="material-symbols-outlined search-icon">search</span>
             <input
               type="text"
-              placeholder="Buscar producto..."
+              placeholder="Buscar producto o código..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
@@ -130,9 +143,10 @@ function Productos() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Código</th>
                 <th>Nombre</th>
                 <th>Categoría / Tipo</th>
+                <th>Unidad</th>
                 <th>Precio</th>
                 <th>Acciones</th>
               </tr>
@@ -141,10 +155,11 @@ function Productos() {
               {productosFiltrados.length > 0 ? (
                 productosFiltrados.map((producto) => (
                   <tr key={producto.id}>
-                    <td>{producto.id}</td>
+                    <td>{formatearCodigo(producto.id)}</td>
                     <td>{producto.nombre}</td>
                     <td>{producto.categoria || '—'}</td>
-                    <td>${producto.precio}</td>
+                    <td>{producto.unidad || 'Unidad'}</td>
+                    <td>{formatearPrecio(producto.precio)}</td>
                     <td>
                       <button
                         type="button"
@@ -167,7 +182,7 @@ function Productos() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
                     {productos.length === 0
                       ? 'No hay productos registrados o el backend de Java está apagado.'
                       : 'No se encontraron productos que coincidan con la búsqueda.'}
@@ -233,6 +248,19 @@ function Productos() {
                 >
                   <option value="" disabled>Selecciona una categoría</option>
                   {CATEGORIAS_PRODUCTO.map((opcion) => (
+                    <option key={opcion} value={opcion}>{opcion}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Unidad</label>
+                <select
+                  value={unidad}
+                  onChange={(e) => setUnidad(e.target.value)}
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  required
+                >
+                  {UNIDADES_PRODUCTO.map((opcion) => (
                     <option key={opcion} value={opcion}>{opcion}</option>
                   ))}
                 </select>

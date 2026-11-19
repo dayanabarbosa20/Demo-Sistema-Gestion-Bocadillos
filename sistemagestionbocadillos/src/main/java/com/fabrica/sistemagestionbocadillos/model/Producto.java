@@ -14,6 +14,8 @@ public class Producto {
     private String nombre;
     @Column(name = "categoria")
     private String categoria;
+    @Column(name = "unidad")
+    private String unidad;
     private Double precio;
     private Integer cantidad;
 
@@ -33,6 +35,9 @@ public class Producto {
 
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
+
+    public String getUnidad() { return unidad; }
+    public void setUnidad(String unidad) { this.unidad = unidad; }
 
     public Double getPrecio() { return precio; }
     public void setPrecio(Double precio) { this.precio = precio; }

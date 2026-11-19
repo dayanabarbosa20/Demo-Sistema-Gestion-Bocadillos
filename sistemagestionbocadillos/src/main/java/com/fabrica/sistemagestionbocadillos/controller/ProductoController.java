@@ -52,6 +52,7 @@ public class ProductoController {
             Producto producto = productoOpt.get();
             producto.setNombre(detalles.getNombre());
             producto.setCategoria(detalles.getCategoria());
+            producto.setUnidad(detalles.getUnidad());
             producto.setPrecio(detalles.getPrecio());
             producto.setCantidad(detalles.getCantidad());
             return ResponseEntity.ok(productoRepository.save(producto));
