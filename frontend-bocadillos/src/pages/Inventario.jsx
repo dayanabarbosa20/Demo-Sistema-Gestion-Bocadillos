@@ -37,6 +37,12 @@ function obtenerEstado(cantidad, stockMinimo) {
   return { texto: 'Disponible', clase: 'bg-green-100 text-green-800' };
 }
 
+function formatearFecha(fecha) {
+  if (!fecha) return '—';
+  const [anio, mes, dia] = fecha.split('-');
+  return anio && mes && dia ? `${dia}/${mes}/${anio}` : fecha;
+}
+
 const campoClase = 'w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-sm text-[#2D2216] focus:border-[#4A7C59] focus:outline-none focus:ring-1 focus:ring-[#4A7C59]';
 
 export default function Inventario() {
@@ -46,7 +52,7 @@ export default function Inventario() {
   const [errorCatalogo, setErrorCatalogo] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [registroSeleccionado, setRegistroSeleccionado] = useState(null);
+  const [registroEditandoId, setRegistroEditandoId] = useState(null);
   const [formDatos, setFormDatos] = useState({
     productoId: '',
     cantidad: '',
@@ -90,17 +96,29 @@ export default function Inventario() {
   );
 
   const abrirModal = () => {
+    setRegistroEditandoId(null);
     setFormDatos({ productoId: '', cantidad: '', unidad: 'Unidad', stockMinimo: '', vence: '' });
     setMostrarModal(true);
   };
 
-  const registrarEntrada = (event) => {
+  const abrirEdicion = (registro) => {
+    setRegistroEditandoId(registro.id);
+    setFormDatos({
+      productoId: registro.codigo,
+      cantidad: String(registro.cantidad),
+      unidad: registro.unidad,
+      stockMinimo: String(registro.stockMinimo),
+      vence: registro.vence,
+    });
+    setMostrarModal(true);
+  };
+
+  const guardarEntrada = (event) => {
     event.preventDefault();
     const producto = productosCatalogo.find((item) => String(item.id) === formDatos.productoId);
     if (!producto) return;
 
-    const nuevoRegistro = {
-      id: globalThis.crypto?.randomUUID?.() ?? `registro-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    const datosRegistro = {
       codigo: String(producto.id),
       producto: producto.nombre,
       cantidad: Number(formDatos.cantidad),
@@ -109,22 +127,24 @@ export default function Inventario() {
       vence: formDatos.vence,
     };
 
-    actualizarInventario((anterior) => [...anterior, nuevoRegistro]);
-    setRegistroSeleccionado(null);
-    setMostrarModal(false);
-  };
+    if (registroEditandoId) {
+      actualizarInventario((anterior) => anterior.map((item) => (
+        item.id === registroEditandoId ? { ...item, ...datosRegistro } : item
+      )));
+    } else {
+      const nuevoRegistro = {
+        ...datosRegistro,
+        id: globalThis.crypto?.randomUUID?.() ?? `registro-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      };
+      actualizarInventario((anterior) => [...anterior, nuevoRegistro]);
+    }
 
-  const actualizarCampo = (id, campo, valor) => {
-    actualizarInventario((anterior) => anterior.map((item) => (
-      item.id === id
-        ? { ...item, [campo]: campo === 'cantidad' || campo === 'stockMinimo' ? Number(valor) : valor }
-        : item
-    )));
+    setRegistroEditandoId(null);
+    setMostrarModal(false);
   };
 
   const eliminarRegistro = (id) => {
     actualizarInventario((anterior) => anterior.filter((item) => item.id !== id));
-    if (registroSeleccionado === id) setRegistroSeleccionado(null);
   };
 
   return (
@@ -149,15 +169,6 @@ export default function Inventario() {
             >
               <span className="material-symbols-outlined">add</span> Registrar Entrada
             </button>
-            {registroSeleccionado && (
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => eliminarRegistro(registroSeleccionado)}
-              >
-                <span className="material-symbols-outlined">delete</span> Eliminar
-              </button>
-            )}
           </div>
 
           <div className="search-box">
@@ -179,7 +190,7 @@ export default function Inventario() {
 
         <div className="table-container overflow-x-auto">
           <table className="data-table min-w-[1050px]">
-            <thead>
+            <thead className="bg-[#DCE9E2]">
               <tr>
                 <th>Código</th>
                 <th>Producto</th>
@@ -194,65 +205,35 @@ export default function Inventario() {
             <tbody>
               {productosFiltrados.length > 0 ? productosFiltrados.map((item) => {
                 const estado = obtenerEstado(item.cantidad, item.stockMinimo);
-                const seleccionado = registroSeleccionado === item.id;
-
                 return (
-                  <tr
-                    key={item.id}
-                    onClick={() => setRegistroSeleccionado(seleccionado ? null : item.id)}
-                    className={seleccionado ? 'bg-green-50' : ''}
-                  >
+                  <tr key={item.id}>
                     <td>{item.codigo}</td>
                     <td>{item.producto}</td>
                     <td>{item.cantidad}</td>
+                    <td>{item.unidad}</td>
+                    <td>{item.stockMinimo}</td>
+                    <td>{formatearFecha(item.vence)}</td>
                     <td>
-                      <select
-                        aria-label={`Unidad de ${item.producto}`}
-                        className={campoClase}
-                        value={item.unidad}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={(event) => actualizarCampo(item.id, 'unidad', event.target.value)}
-                      >
-                        {UNIDADES.map((unidad) => <option key={unidad} value={unidad}>{unidad}</option>)}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        aria-label={`Stock mínimo de ${item.producto}`}
-                        className={`${campoClase} w-24`}
-                        type="number"
-                        min="0"
-                        step="any"
-                        value={item.stockMinimo}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={(event) => actualizarCampo(item.id, 'stockMinimo', event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        aria-label={`Vencimiento de ${item.producto}`}
-                        className={campoClase}
-                        type="date"
-                        value={item.vence}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={(event) => actualizarCampo(item.id, 'vence', event.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${estado.clase}`}>
+                      <span className={`badge ${estado.clase}`}>
                         {estado.texto}
                       </span>
                     </td>
                     <td>
                       <button
                         type="button"
+                        className="action-btn edit-inline"
+                        onClick={() => abrirEdicion(item)}
+                        title="Editar entrada"
+                        aria-label={`Editar entrada de ${item.producto}`}
+                      >
+                        <span className="material-symbols-outlined">edit</span>
+                      </button>
+                      <button
+                        type="button"
                         className="action-btn delete-inline"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          eliminarRegistro(item.id);
-                        }}
-                        title="Eliminar entrada"
-                        aria-label={`Eliminar entrada de ${item.producto}`}
+                        onClick={() => eliminarRegistro(item.id)}
+                        title="Borrar entrada"
+                        aria-label={`Borrar entrada de ${item.producto}`}
                       >
                         <span className="material-symbols-outlined">delete</span>
                       </button>
@@ -291,9 +272,9 @@ export default function Inventario() {
             aria-labelledby="titulo-entrada-inventario"
           >
             <h3 id="titulo-entrada-inventario" className="mb-5 text-xl font-semibold text-[#2D2216]">
-              Registrar Entrada
+              {registroEditandoId ? 'Editar Entrada de Inventario' : 'Registrar Entrada de Inventario'}
             </h3>
-            <form onSubmit={registrarEntrada} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form onSubmit={guardarEntrada} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
                 <span className="mb-1 block text-sm font-medium">Producto</span>
                 <select
@@ -370,7 +351,7 @@ export default function Inventario() {
                   className="btn bg-[#4A7C59] text-white hover:bg-[#3c6749]"
                   disabled={cargandoProductos || productosCatalogo.length === 0}
                 >
-                  Registrar Entrada
+                  Guardar Entrada
                 </button>
               </div>
             </form>
