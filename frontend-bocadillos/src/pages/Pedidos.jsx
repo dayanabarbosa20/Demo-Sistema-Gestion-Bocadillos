@@ -58,10 +58,11 @@ export default function Pedidos() {
   const guardarPedido = async (event) => {
     event.preventDefault();
     const idKey = pedidoEditando?.idPedido ?? pedidoEditando?.id;
+    const valorTotal = formDatos.total;
     const datosPedido = {
       cliente: formDatos.cliente,
       fecha: formDatos.fecha,
-      total: Number(formDatos.total),
+      total: Number(String(valorTotal).replace(/\D/g, '')),
       estado: formDatos.estado,
     };
 
@@ -103,8 +104,10 @@ export default function Pedidos() {
   const consulta = busqueda.toLowerCase();
   const pedidosFiltrados = listaPedidos.filter((item) => {
     const idKey = item.idPedido ?? item.id;
+    const idFormateado = String(item.id ?? '').padStart(3, '0');
     return [
       idKey,
+      idFormateado,
       item.cliente,
       item.estado,
       item.fecha,
@@ -162,12 +165,13 @@ export default function Pedidos() {
               ) : pedidosFiltrados.length > 0 ? (
                 pedidosFiltrados.map((item) => {
                   const idKey = item.idPedido ?? item.id;
+                  const idFormateado = String(item.id ?? '').padStart(3, '0');
                   return (
                     <tr key={idKey}>
-                      <td>#{idKey}</td>
+                      <td>{idFormateado}</td>
                       <td>{item.cliente}</td>
                       <td>{item.fecha ?? '-'}</td>
-                      <td>${item.total}</td>
+                      <td>$ {Number(item.total || 0).toLocaleString('es-CO')}</td>
                       <td>
                         <span className={`badge ${obtenerEstadoClass(item.estado)}`}>{item.estado}</span>
                       </td>
@@ -258,9 +262,8 @@ export default function Pedidos() {
                 <label htmlFor="totalPedido" style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Total ($)</label>
                 <input
                   id="totalPedido"
-                  type="number"
-                  step="0.01"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
                   value={formDatos.total}
                   onChange={(e) => setFormDatos({ ...formDatos, total: e.target.value })}
                   style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}

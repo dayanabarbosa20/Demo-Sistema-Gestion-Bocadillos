@@ -2,8 +2,7 @@ package com.fabrica.sistemagestionbocadillos.controller;
 
 import com.fabrica.sistemagestionbocadillos.model.Producto;
 import com.fabrica.sistemagestionbocadillos.repository.ProductoRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.fabrica.sistemagestionbocadillos.service.ProductoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(
-    origins = "*",
+    origins = "https://sistemagestionbocadillos.netlify.app",
     methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
     allowCredentials = "false"
 )
@@ -29,8 +28,8 @@ public class ProductoController {
     @Autowired
     private ProductoRepository productoRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private ProductoService productoService;
 
     // 1. CREAR (POST)
     @PostMapping
@@ -38,11 +37,8 @@ public class ProductoController {
     public ResponseEntity<Producto> guardarProducto(@RequestBody Producto producto) {
         if (productoRepository.count() == 0) {
             try {
-                entityManager.createNativeQuery(
-                    "SELECT setval(pg_get_serial_sequence('productos', 'id_producto'), 1, false)"
-                ).getSingleResult();
+                productoService.reiniciarSecuenciaProductos();
             } catch (Exception e) {
-                logger.warn("No se pudo reiniciar la secuencia de productos", e);
             }
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(productoRepository.save(producto));
