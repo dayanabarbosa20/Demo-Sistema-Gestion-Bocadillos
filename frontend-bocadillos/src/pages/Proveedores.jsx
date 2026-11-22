@@ -15,6 +15,7 @@ export default function Proveedores() {
   const guardadoEnCurso = useRef(false);
   const [formDatos, setFormDatos] = useState({
     nombre: '',
+    insumo: '',
     telefono: '',
     correo: '',
     estado: 'Activo'
@@ -41,10 +42,17 @@ export default function Proveedores() {
 
   const obtenerId = (proveedor) => proveedor.id_proveedor ?? proveedor.idProveedor;
 
-  const proveedoresFiltrados = listaProveedores.filter((item) =>
-    item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    item.correo.toLowerCase().includes(busqueda.toLowerCase()) ||
-    String(item.telefono).includes(busqueda)
+  const consulta = busqueda.toLowerCase();
+  const proveedoresConCodigo = listaProveedores.map((item, index) => ({
+    ...item,
+    codigoVisual: String(index + 1).padStart(3, '0'),
+  }));
+  const proveedoresFiltrados = proveedoresConCodigo.filter((item) =>
+    String(item.codigoVisual).toLowerCase().includes(consulta) ||
+    String(item.nombre ?? '').toLowerCase().includes(consulta) ||
+    String(item.insumo ?? '').toLowerCase().includes(consulta) ||
+    String(item.correo ?? '').toLowerCase().includes(consulta) ||
+    String(item.telefono ?? '').includes(consulta)
   );
 
   const seleccionarFila = (item) => {
@@ -57,7 +65,7 @@ export default function Proveedores() {
 
   const handleAbrirCrear = () => {
     setModoEdicion(false);
-    setFormDatos({ nombre: '', telefono: '', correo: '', estado: 'Activo' });
+    setFormDatos({ nombre: '', insumo: '', telefono: '', correo: '', estado: 'Activo' });
     setMostrarModal(true);
   };
 
@@ -102,6 +110,7 @@ export default function Proveedores() {
 
     const datosProveedor = {
       nombre: formDatos.nombre.trim(),
+      insumo: (formDatos.insumo ?? '').trim(),
       telefono: formDatos.telefono.trim(),
       correo: formDatos.correo.trim(),
       estado: formDatos.estado
@@ -157,29 +166,13 @@ export default function Proveedores() {
             <button type="button" className="btn btn-success" onClick={handleAbrirCrear}>
               <span className="material-symbols-outlined">add</span> Nuevo Proveedor
             </button>
-            <button 
-              type="button" 
-              className="btn btn-info" 
-              disabled={!proveedorSeleccionado}
-              onClick={() => handleAbrirEditar()}
-            >
-              <span className="material-symbols-outlined">edit</span> Editar
-            </button>
-            <button 
-              type="button" 
-              className="btn btn-danger" 
-              disabled={!proveedorSeleccionado}
-              onClick={() => handleEliminar()}
-            >
-              <span className="material-symbols-outlined">delete</span> Eliminar
-            </button>
           </div>
 
           <div className="search-box">
             <span className="material-symbols-outlined search-icon">search</span>
             <input 
               type="text" 
-              placeholder="Buscar Proveedor..." 
+              placeholder="Buscar proveedor o código..." 
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
@@ -191,8 +184,10 @@ export default function Proveedores() {
           <table className="data-table">
             <thead>
               <tr>
+                <th>Código</th>
                 <th>Proveedor</th>
-                <th>Telefono</th>
+                <th>Insumo</th>
+                <th>Teléfono</th>
                 <th>Correo</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -211,11 +206,20 @@ export default function Proveedores() {
                         cursor: 'pointer'
                       }}
                     >
+                      <td>{item.codigoVisual}</td>
                       <td>{item.nombre}</td>
+                      <td>{item.insumo ?? ''}</td>
                       <td>{item.telefono}</td>
                       <td>{item.correo}</td>
                       <td>
-                        <span className={`badge ${obtenerEstadoClass(item.estado)}`}>{item.estado}</span>
+                        <span
+                          className={`badge ${obtenerEstadoClass(item.estado)}`}
+                          style={item.estado === 'Activo'
+                            ? { backgroundColor: '#D1E7DD', color: '#0F5132' }
+                            : { backgroundColor: '#E2E3E5', color: '#41464B' }}
+                        >
+                          {item.estado}
+                        </span>
                       </td>
                       <td>
                         <button 
@@ -246,7 +250,7 @@ export default function Proveedores() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
                     {errorCarga || (listaProveedores.length === 0
                       ? 'No hay proveedores registrados.'
                       : 'No se encontraron proveedores.')}
@@ -304,6 +308,17 @@ export default function Proveedores() {
                   style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                   placeholder="Ej: Lácteos el Valle"
                   required
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Insumo</label>
+                <input
+                  type="text"
+                  value={formDatos.insumo ?? ''}
+                  onChange={(e) => setFormDatos({ ...formDatos, insumo: e.target.value })}
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="Ej: Harina de trigo"
                 />
               </div>
 
