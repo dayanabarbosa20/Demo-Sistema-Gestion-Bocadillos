@@ -79,8 +79,10 @@ function obtenerBadgeEstado(estadoRaw) {
 
 const estilos = {
   gridTarjetas: {
+    position: 'relative',
+    zIndex: 10,
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
     gap: '18px',
     marginBottom: '26px',
   },
@@ -89,12 +91,14 @@ const estilos = {
     borderRadius: '12px',
     padding: '22px 20px',
     border: activa ? '2px solid #115c36' : '1px solid #e5e7eb',
-    boxShadow: activa ? '0 6px 16px rgba(17, 92, 54, 0.12)' : '0 2px 6px rgba(0, 0, 0, 0.04)',
+    boxShadow: activa ? '0 6px 16px rgba(17, 92, 54, 0.14)' : '0 2px 6px rgba(0, 0, 0, 0.04)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     textAlign: 'center',
     gap: '12px',
+    cursor: 'pointer',
+    userSelect: 'none',
     transition: 'all 0.15s ease',
   }),
   iconoTarjeta: {
@@ -106,12 +110,14 @@ const estilos = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    pointerEvents: 'none',
   },
   tituloTarjeta: {
     margin: 0,
     fontSize: '1rem',
     fontWeight: 700,
     color: '#1f2937',
+    pointerEvents: 'none',
   },
   botonTarjeta: (activa) => ({
     width: '100%',
@@ -125,6 +131,8 @@ const estilos = {
     cursor: 'pointer',
   }),
   hojaDocumento: {
+    position: 'relative',
+    zIndex: 5,
     backgroundColor: '#ffffff',
     borderRadius: '12px',
     padding: '28px 32px',
@@ -205,7 +213,6 @@ export default function Reportes() {
   const cargarDatosReales = useCallback(async () => {
     setCargando(true);
 
-    // 1. Inventario (misma fuente localStorage que Inventario.jsx)
     const inventarioLocal = leerLocalStorageSeguro([INVENTORY_STORAGE_KEY]).map((item, index) => ({
       id: item.id ?? index,
       codigo: formatearCodigo3Digitos(item.codigo ?? item.productoId, index),
@@ -216,7 +223,6 @@ export default function Reportes() {
       vence: item.vence || '',
     }));
 
-    // 2. Producción, Pedidos y Proveedores desde la API (con fallback a localStorage)
     const [resProduccion, resPedidos, resProveedores] = await Promise.allSettled([
       api.get('/produccion'),
       api.get('/pedidos'),
@@ -280,6 +286,10 @@ export default function Reportes() {
     cargarDatosReales();
   }, [cargarDatosReales]);
 
+  const seleccionarReporte = (id) => {
+    setReporteActivo(id);
+  };
+
   const tarjetaActual = TARJETAS_REPORTE.find((t) => t.id === reporteActivo) || TARJETAS_REPORTE[0];
   const fechaEmision = new Date().toLocaleDateString('es-CO', {
     day: '2-digit',
@@ -302,12 +312,25 @@ export default function Reportes() {
           </div>
         </div>
 
-        {/* Tarjetas selectoras de reporte */}
+        {/* Tarjetas selectoras de reporte (toda la tarjeta es clicable) */}
         <div style={estilos.gridTarjetas}>
           {TARJETAS_REPORTE.map((tarjeta) => {
             const seleccionada = reporteActivo === tarjeta.id;
             return (
-              <div key={tarjeta.id} style={estilos.tarjeta(seleccionada)}>
+              <div
+                key={tarjeta.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={seleccionada}
+                style={estilos.tarjeta(seleccionada)}
+                onClick={() => seleccionarReporte(tarjeta.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    seleccionarReporte(tarjeta.id);
+                  }
+                }}
+              >
                 <div style={estilos.iconoTarjeta}>
                   <span className="material-symbols-outlined">{tarjeta.icono}</span>
                 </div>
@@ -315,9 +338,9 @@ export default function Reportes() {
                 <button
                   type="button"
                   style={estilos.botonTarjeta(seleccionada)}
-                  onClick={() => {
-                    setReporteActivo(tarjeta.id);
-                    cargarDatosReales();
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    seleccionarReporte(tarjeta.id);
                   }}
                 >
                   {seleccionada ? 'Seleccionado ✓' : 'Generar Reporte'}
