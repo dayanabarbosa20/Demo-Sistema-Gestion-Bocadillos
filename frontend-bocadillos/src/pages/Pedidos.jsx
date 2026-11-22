@@ -57,7 +57,7 @@ export default function Pedidos() {
 
   const guardarPedido = async (event) => {
     event.preventDefault();
-    const idKey = pedidoEditando?.idPedido ?? pedidoEditando?.id;
+    const idKey = pedidoEditando?.id ?? pedidoEditando?.idPedido;
     const valorTotal = formDatos.total;
     const datosPedido = {
       cliente: formDatos.cliente,
@@ -81,7 +81,7 @@ export default function Pedidos() {
   };
 
   const eliminarPedido = async (item) => {
-    const idKey = item.idPedido ?? item.id;
+    const idKey = item.id ?? item.idPedido;
     if (!window.confirm(`¿Seguro que deseas eliminar el pedido de ${item.cliente}?`)) return;
     try {
       await api.delete(`/pedidos/${idKey}`);
@@ -102,16 +102,19 @@ export default function Pedidos() {
   };
 
   const consulta = busqueda.toLowerCase();
-  const pedidosFiltrados = listaPedidos.filter((item) => {
-    const idKey = item.idPedido ?? item.id;
-    const idFormateado = String(item.id ?? '').padStart(3, '0');
+  const pedidosConCodigo = listaPedidos.map((pedido, index) => ({
+    ...pedido,
+    codigoVisual: String(index + 1).padStart(3, '0'),
+  }));
+  const pedidosFiltrados = pedidosConCodigo.filter((pedido) => {
     return [
-      idKey,
-      idFormateado,
-      item.cliente,
-      item.estado,
-      item.fecha,
-      item.total,
+      pedido.id,
+      pedido.idPedido,
+      pedido.codigoVisual,
+      pedido.cliente,
+      pedido.estado,
+      pedido.fecha,
+      pedido.total,
     ].some((val) => String(val ?? '').toLowerCase().includes(consulta));
   });
 
@@ -163,23 +166,22 @@ export default function Pedidos() {
               ) : error ? (
                 <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>{error}</td></tr>
               ) : pedidosFiltrados.length > 0 ? (
-                pedidosFiltrados.map((item) => {
-                  const idKey = item.idPedido ?? item.id;
-                  const idFormateado = String(item.id ?? '').padStart(3, '0');
+                pedidosFiltrados.map((pedido) => {
+                  const idKey = pedido.id ?? pedido.idPedido;
                   return (
                     <tr key={idKey}>
-                      <td>{idFormateado}</td>
-                      <td>{item.cliente}</td>
-                      <td>{item.fecha ?? '-'}</td>
-                      <td>$ {Number(item.total || 0).toLocaleString('es-CO')}</td>
+                      <td>{pedido.codigoVisual}</td>
+                      <td>{pedido.cliente}</td>
+                      <td>{pedido.fecha ?? '-'}</td>
+                      <td>$ {Number(pedido.total || 0).toLocaleString('es-CO')}</td>
                       <td>
-                        <span className={`badge ${obtenerEstadoClass(item.estado)}`}>{item.estado}</span>
+                        <span className={`badge ${obtenerEstadoClass(pedido.estado)}`}>{pedido.estado}</span>
                       </td>
                       <td>
                         <button
                           type="button"
                           className="action-btn edit-inline"
-                          onClick={() => abrirEditar(item)}
+                          onClick={() => abrirEditar(pedido)}
                           title="Editar"
                         >
                           <span className="material-symbols-outlined">edit</span>
@@ -187,7 +189,7 @@ export default function Pedidos() {
                         <button
                           type="button"
                           className="action-btn delete-inline"
-                          onClick={() => eliminarPedido(item)}
+                          onClick={() => eliminarPedido(pedido)}
                           title="Eliminar"
                         >
                           <span className="material-symbols-outlined">delete</span>
